@@ -2,9 +2,10 @@ package com.ravingarinc.oose.assignment1.maze.icon;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
+import com.ravingarinc.oose.assignment1.maze.Position;
 
 public interface Icon {
-    char[][] getSymbol();
+    String[][] getSymbol();
 
     /**
      * Called when a player attempts to move to this icon
@@ -12,4 +13,8 @@ public interface Icon {
      * @return True if player can move to this icon
      */
     boolean onMove(Player player, Direction direction);
+
+    void setNext(Icon next);
+
+    Position getPos();
 }

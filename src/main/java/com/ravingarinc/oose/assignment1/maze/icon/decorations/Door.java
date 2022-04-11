@@ -1,27 +1,29 @@
-package com.ravingarinc.oose.assignment1.maze.icon;
+package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
+import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
-public class Door extends Element {
+public class Door extends Additive {
     private final Direction blocking;
     private final Colour colour;
     private boolean isOpen;
 
-    public Door(Icon next, Direction blocking, Colour colour) {
-        super(next);
+    public Door(Direction blocking, Colour colour, int row, int column) {
+        super(row, column);
         this.blocking = blocking;
         this.colour = colour;
         isOpen = false;
     }
 
     @Override
-    public char[][] getSymbol() {
-        char[][] symbols = next.getSymbol();
+    public String[][] getSymbol() {
+        //FIXME The issue of how there are two doors on one plane...
+        String[][] symbols = next.getSymbol();
 
-        char character = isOpen ? ' ' : Symbol.DOOR.getSymbol();
+        String character = isOpen ? " " : colour.toString() + Symbol.DOOR;
 
         switch(blocking) {
             case UP,DOWN -> {

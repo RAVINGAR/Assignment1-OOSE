@@ -1,13 +1,14 @@
-package com.ravingarinc.oose.assignment1.maze.icon;
+package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
+import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
-public class Message extends Element {
+public class Message extends Additive {
     private final String message;
 
-    public Message(Icon next, String message) {
-        super(next);
+    public Message(String message, int row, int column) {
+        super(row, column);
         this.message = message;
     }
 

@@ -1,0 +1,34 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+/.idea/.gitignore
+/.idea/.name
+/.gradle/buildOutputCleanup/buildOutputCleanup.lock
+/.gradle/buildOutputCleanup/cache.properties
+/.gradle/7.4/checksums/checksums.lock
+/.gradle/7.4.2/checksums/checksums.lock
+/.idea/compiler.xml
+/.gradle/7.4/dependencies-accessors/dependencies-accessors.lock
+/.gradle/7.4.2/dependencies-accessors/dependencies-accessors.lock
+/.gradle/7.4/executionHistory/executionHistory.lock
+/.gradle/7.4.2/executionHistory/executionHistory.lock
+/.gradle/7.4/fileHashes/fileHashes.lock
+/.gradle/7.4.2/fileHashes/fileHashes.lock
+/.gradle/7.4/dependencies-accessors/gc.properties
+/.gradle/7.4/gc.properties
+/.gradle/7.4.2/dependencies-accessors/gc.properties
+/.gradle/7.4.2/gc.properties
+/.gradle/vcs-1/gc.properties
+/.idea/gradle.xml
+/.idea/jarRepositories.xml
+/.gradle/7.4/fileChanges/last-build.bin
+/.gradle/7.4.2/fileChanges/last-build.bin
+/.gradle/7.4/checksums/md5-checksums.bin
+/.idea/misc.xml
+/.idea/runConfigurations.xml
+/.gradle/7.4/checksums/sha1-checksums.bin
+/.idea/uiDesigner.xml
+/.idea/vcs.xml

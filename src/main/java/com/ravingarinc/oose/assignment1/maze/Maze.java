@@ -1,15 +1,23 @@
 package com.ravingarinc.oose.assignment1.maze;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
-import com.ravingarinc.oose.assignment1.maze.icon.Icon;
+import com.ravingarinc.oose.assignment1.character.Player;
+import com.ravingarinc.oose.assignment1.io.MazeFormatException;
+import com.ravingarinc.oose.assignment1.maze.icon.*;
+import com.ravingarinc.oose.assignment1.maze.icon.decorations.*;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Maze {
-    List<List<Icon>> grid;
-    int rows, columns;
+    private List<List<Icon>> grid;
+    private int rows, columns;
+    private Player player = null;
     /*
     WH 2 3, Horizontal _ above 2 3, below 2,2
     Therefore this means trace
@@ -31,103 +39,338 @@ public class Maze {
     o───o───o
      */
 
-    public Maze(int rows, int columns) {
-        this.rows = rows;
-        this.columns = columns;
+    public Maze(String filename) throws MazeFormatException {
+        MazeReader reader = new MazeReader(filename);
 
         this.grid = new ArrayList<>();
         for(int r = 0; r < rows; r++) {
             this.grid.add(new ArrayList<>());
         }
+
+        parseMazeData(reader.getData());
+
+        reader.closeReader();
     }
 
+    private void parseMazeData(Map<String, LinkedList<String>> data) throws MazeFormatException {
+        /*
+        - There should only be 1 start position. The player is created at the start position
+        - End positions are abstracted icon's that have a different on move position
+         */
+
+        /*
+        Maze must be added in this order
+
+        new Key(new Message(new Door(new Wall(new Element))))
+
+        */
+
+        //"S", "E", "K", "WH", "WV", "DH", "DV"
+        //Fixme there is alot of repeating code here. How can it be condensed?
+        for(Map.Entry<String, LinkedList<String>> key : data.entrySet()) {
+            LinkedList<String> list = key.getValue();
+            String parsedKey = key.getKey();
+            switch(parsedKey) {
+                case "S" -> {
+                    while(player == null && !list.isEmpty()) {
+                        String[] split = list.removeFirst().split(" ", 3); //Limit of 3 to prevent parsing issues
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+
+                            if(0 < r && r < rows && 0 < c && c < columns) {
+                                player = new Player(r, c);
+                            }
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid start location for player, looking for another..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
+                        }
+                    }
+
+                    if(player == null) {
+                        throw new MazeFormatException("Invalid maze file! No VALID start locations were specified!");
+                    }
+                }
+                case "E" -> {
+                    list.forEach(element -> {
+                        String[] split = element.split(" ", 3);
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+                            this.putIcon(r, c, new End(r, c));
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
+                        }
+                    });
+                }
+                case "K" -> {
+                    list.forEach(element -> {
+                        String[] split = element.split(" ", 3);
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+                            this.putIcon(r, c, new Key(Colour.matchColour(Integer.parseInt(split[2])), r, c));
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Key had no specified colour! Skipping..");
+                        }
+                    });
+                }
+                case "M" -> {
+                    list.forEach(element -> {
+                        String[] split = element.split(" ", 3);
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+                            this.putIcon(r, c, new Message(split[2], r, c));
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                        }
+                    });
+                }
+                case "WH", "WV" -> {
+                    list.forEach(element -> {
+                        String[] split = element.split(" ", 3);
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+                            if(parsedKey.equals("WH")) { //If Horizontal
+                                this.putIcon(r, c, new Wall(Direction.UP, r, c));
+                                this.putIcon(r+1, c, new Wall(Direction.DOWN, r, c));
+                            }
+                            else { //If Vertical
+                                this.putIcon(r, c, new Wall(Direction.LEFT, r, c));
+                                this.putIcon(r, c-1, new Wall(Direction.RIGHT, r, c));
+                            }
+
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                        }
+                    });
+                }
+                case "DH", "DV" -> {
+                    list.forEach(element -> {
+                        String[] split = element.split(" ", 3);
+                        try {
+                            int r = Integer.parseInt(split[0]);
+                            int c = Integer.parseInt(split[1]);
+                            Colour colour = Colour.matchColour(Integer.parseInt(split[2]));
+                            //Fixme there are two doors?
+                            if(parsedKey.equals("DH")) { //If Horizontal
+                                this.putIcon(r, c, new Door(Direction.UP, colour, r, c));
+                                this.putIcon(r+1, c, new Door(Direction.DOWN, colour, r, c));
+                            }
+                            else { //If Vertical
+                                this.putIcon(r, c, new Door(Direction.LEFT, colour, r, c));
+                                this.putIcon(r, c-1, new Door(Direction.RIGHT, colour, r, c));
+                            }
+
+                        }
+                        catch(NumberFormatException e) {
+                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            MazeApplication.log(Level.WARNING, "Door had no colour! Skipping..");
+                        }
+                    });
+                }
+                default -> {
+                    MazeApplication.log(Level.SEVERE, "Found maze data element that should NOT be present. Skipping..");
+                }
+            }
+        }
+    }
+
+    @Nullable
     public Icon getIcon(int row, int column) {
-        return this.grid.get(row).get(column);
+        return 0 < row && row < rows && 0 < column && column < columns ? this.grid.get(row).get(column) : null;
     }
 
     public void updateMaze() {
 
     }
 
-    public void putIcon(int row, int column, Icon icon) {
-        this.grid.get(row).add(column, icon);
+    public void handlePlayerMove(Direction direction) {
+        if(canPlayerMove(direction)) {
+            player.move(direction);
+        }
+    }
+
+    public boolean canPlayerMove(Direction direction) {
+        Position pos = player.getPos();
+        return switch(direction) {
+            case UP -> pos.row() - 1 >= 0;
+            case DOWN -> pos.row() + 1 < rows;
+            case LEFT -> pos.column() - 1 >= 0;
+            case RIGHT -> pos.column() + 1 < columns;
+        };
     }
 
     /**
-     * Transforms maze into a displayable format in terms of char characters.
-     * @return 2D char array containing values of the maze or null if icon is invalid
+     * Appends to the current Icon at a location or creates a new one if it doesn't exists
+     * @param row y axis
+     * @param column x axis
+     * @param icon icon to append
      */
-    public char[][] getDisplayableMaze() {
-        //The final size will be larger than the specified, since Walls
-        char[][] display = new char[1 + rows * 2][1 + columns * 4];
-
-        int r = 0, c;
-        for(List<Icon> row : grid) {
-            c = 0;
-            for(Icon icon : row) {
-                char[][] symbol = icon.getSymbol();
-                if(symbol.length != 3 || symbol[0].length != 5) {
-                    return null;
-                }
-                for(int i = 0; i < 3; i++) {
-                    for(int j = 0; j < 5; j++) {
-                        display[r+i][c+j] = symbol[i][j];
-                    }
-                }
-                //Top left corner is [r][c]
-                //Top right corner is [r][c+4]
-                //Bottom left corner is [r+2][c]
-                //Bottom right corner is [r+2[c+4]
-
-                /*
-                The goal here now is to fill the corner blocks with their corresponding symbols
-                However since for every icon only the icons to the LEFT and ABOVE will have been filled
-                at every iteration. This means only the top left corner needs to be considered
-
-                Since only the top left corner is considered, what will occur is that the very right wall (edge)
-                will not have its corners updated. And neither will the very bottom wall.
-
-                Whilst this method is more complicated to understand it reduces overall runtime complexity
-                */
-
-                display[r][c] = Symbol.getApplicable(r, c, display); //Sets the top left corner
-
-                c++;
-            }
-            //At this point, all corner icons above and left of the most right icon will be filled
-            //We are able to now fill the top right corner since this is the most right icon here.
-
-            display[r][c+4] = Symbol.getApplicable(r, c+4, display);
-            r++;
+    public void putIcon(int row, int column, Icon icon) {
+        if(0 < row && row < rows && 0 < column && column < columns) { //Only will occur if in bounds.
+            Icon existing = this.grid.get(row).get(column); //We do not call getIcon() here as that may return null if out of bounds.
+            if(existing != null) {
+                icon.setNext(existing);
+            } //There is no need to setNext of icon to 'new Element()' as this is done by default.
+            this.grid.get(row).add(column, icon);
         }
-        //At this point all icon corners except for the most bottom row will be filled.
-        //We could add an if statement in the above for loop to check if it's at the bottom row, however
-        //the below method is neater
-
-        //Iterates at the bottom row for every corner piece.
-        for(int h = 0; h < 1 + columns * 4; h += 4) {
-            display[rows * 2][h] = Symbol.getApplicable(rows * 2, h, display);
-        }
-
-        return display;
     }
 
-    /** Will update a singular icon in a maze at a specific location. This should be used to update keys and doors
-     *   after player uses them
-     * @param row The icon's row
-     * @param column The icon's column
-     * @param display The maze
-     * @return The entire displayable maze, modified for a single icon
+    /**
+     *
+     * @return An unmodifiable grid
      */
-    public char[][] updateIcon(int row, int column, char[][] display) {
-        Icon icon = this.getIcon(row, column);
-        char[][] symbol = icon.getSymbol();
+    public List<List<Icon>> getGrid() {
+        List<List<Icon>> unmodifiable = new ArrayList<>();
+        for(List<Icon> row : grid) {
+            unmodifiable.add(Collections.unmodifiableList(row));
+        }
+        return Collections.unmodifiableList(unmodifiable);
+    }
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 5; j++) {
-                display[row+i][column+j] = symbol[i][j];
+    public int getRows() { return rows; }
+    public int getColumns() { return columns; }
+
+    /*
+    The reason this is a private inner class is to reduce the amount of parameters that need to be passed between methods
+    Additionally, the goal is to only initialise the BufferedReader once, since it only needs to read the file once.
+
+    As such, I have split different responsibilities into different methods. And to do this there needs to be one universal
+    BufferedReader available.
+    */
+    private class MazeReader {
+        private Map<String, LinkedList<String>> data;
+        private BufferedReader reader;
+
+        public MazeReader(String filename) throws MazeFormatException {
+            if(filename != null && filename.isEmpty()) {
+                throw new MazeFormatException("Filename cannot be null or empty!");
+            }
+
+            try {
+               reader = new BufferedReader(new FileReader(filename));
+
+            } catch (FileNotFoundException e) {
+                throw new MazeFormatException("Could not find file with filename " + filename + "!");
+            }
+
+            init(); //Initialise rows and column. todo maybe move this to Maze somehow.
+            data = initialiseMap();
+            readMazeData();
+        }
+
+        /**
+         * Checks for a valid first line. Will throw an
+         * @throws MazeFormatException if it encounters an IO exception
+         */
+        private void init() throws MazeFormatException {
+            String line = null;
+            try {
+                line = reader.readLine();
+                if(line != null && !line.isEmpty()) {
+                    String[] split = line.split(" ");
+                    rows = Integer.parseInt(split[0]);
+                    columns = Integer.parseInt(split[1]);
+                }
+                else {
+                    throw new MazeFormatException("Initial line had incorrect format! First line read; \n" + line);
+                }
+            }
+            catch(IOException e) {
+                throw new MazeFormatException("Encountered IOException! " + e);
+            }
+            catch(NumberFormatException e) {
+                throw new MazeFormatException("Initial line used incorrect syntax for rows and columns! First line read; \n" + line);
             }
         }
-        return display;
+
+        private void readMazeData() {
+            try {
+                reader.readLine();
+                String line = reader.readLine();
+
+                while(line != null) {
+                    try {
+                        if(!line.isEmpty()) {
+                            String[] split = line.split(" ", 2);
+                            addData(split[0], split[1]);
+                        }
+                        else {
+                            MazeApplication.log(Level.WARNING, "Line was empty! Skipping..");
+                        }
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        //This is to avoid having to unnecessarily check for valid lengths in the above.
+                        MazeApplication.log(Level.WARNING, "Encountered syntax error at; \n'" + line + "'\n Skipping..");
+                    }
+
+                    line = reader.readLine();
+                }
+            }
+            catch(IOException e) {
+                MazeApplication.log(Level.SEVERE, "Encountered IOException! " + e);
+            }
+        }
+
+        private Map<String, LinkedList<String>> getData() {
+            return this.data;
+        }
+
+        private void addData(String key, String data) {
+            LinkedList<String> list = this.data.get(key);
+            if(list == null) {
+                MazeApplication.log(Level.WARNING, "Line had invalid key of '" + key + "'! Skipping..");
+            }
+            else {
+                list.add(data);
+            }
+        }
+
+        private Map<String, LinkedList<String>> initialiseMap() {
+            Map<String, LinkedList<String>> map = new LinkedHashMap<>(); //Using a LinkedHashMap to maintain insertion order.
+
+            String[] keys = {"S", "E", "K", "M", "WH", "WV", "DH", "DV"};
+            for(String k : keys) {
+                map.put(k, new LinkedList<>());
+            }
+            return map;
+        }
+
+        /**
+         * Attempts to close the buffered reader initialised in this class
+         */
+        public void closeReader() {
+            try {
+                this.reader.close();
+                reader = null;
+            }
+            catch(IOException e) {
+                MazeApplication.log(Level.WARNING, "Failed to close BufferedReader in class due to IOException; \n" + e);
+            }
+        }
     }
 }

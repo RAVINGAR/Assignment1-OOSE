@@ -1,20 +1,21 @@
-package com.ravingarinc.oose.assignment1.maze.icon;
+package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
+import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
-public class Wall extends Element {
+public class Wall extends Additive {
     private final Direction blocking;
 
-    public Wall(Icon next, Direction blocking) {
-        super(next);
+    public Wall(Direction blocking, int row, int column) {
+        super(row, column);
         this.blocking = blocking;
     }
 
     @Override
-    public char[][] getSymbol() {
-        char[][] symbol = next.getSymbol();
+    public String[][] getSymbol() {
+        String[][] symbol = next.getSymbol();
 
         //Use of decorator pattern to 'append' to the base symbol. Here, corner icons should not be
         //considered since each 'Wall' does not actually know about any other walls
@@ -22,14 +23,14 @@ public class Wall extends Element {
         switch(blocking) {
             case UP,DOWN -> {
                 for(int i = 1; i < 4; i++) {
-                    symbol[blocking == Direction.UP ? 0 : 2][i] = Symbol.HORIZONTAL_WALL.getSymbol();
+                    symbol[blocking == Direction.UP ? 0 : 2][i] = Symbol.HORIZONTAL_WALL.toString();
                 }
             }
             case LEFT -> {
-                symbol[1][0] = Symbol.VERTICAL_WALL.getSymbol();
+                symbol[1][0] = Symbol.VERTICAL_WALL.toString();
             }
             case RIGHT -> {
-                symbol[1][4] = Symbol.VERTICAL_WALL.getSymbol();
+                symbol[1][4] = Symbol.VERTICAL_WALL.toString();
             }
         }
 
