@@ -4,6 +4,7 @@ import com.ravingarinc.oose.assignment1.MazeApplication;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Position;
+import com.ravingarinc.oose.assignment1.maze.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,8 @@ import java.util.logging.Level;
 public class Player {
     private final Map<Colour, Integer> keys;
     private Position position;
+    private String message;
+    private String symbol;
 
     public Player(int row, int column) {
         keys = new HashMap<>();
@@ -21,6 +24,8 @@ public class Player {
             keys.put(c, 0);
         }
         position = new Position(row, column);
+        message = "";
+        symbol = Colour.WHITE + Symbol.UP.toString();
     }
 
     public boolean hasKey(Colour colour) {
@@ -43,14 +48,18 @@ public class Player {
     }
 
     public void move(Direction direction) {
+        symbol = Colour.WHITE + direction.getSymbol();
         position.move(direction);
     }
 
-    public Position getPos() {
-        return position;
-    }
+    public int row() { return position.row(); }
+    public int column() { return position.column(); }
 
     public void sendMessage(String message) {
-
+        this.message = message;
     }
+
+    public String getSymbol() { return symbol; };
+
+    public String getMessage() { return message; }
 }

@@ -14,6 +14,9 @@ public class MazeApplication {
         final Maze maze = setupMaze();
 
         final Viewer viewer = setupViewer(maze);
+
+        viewer.initialiseDisplay(maze);
+        viewer.display();
     }
 
     private static Maze setupMaze() {

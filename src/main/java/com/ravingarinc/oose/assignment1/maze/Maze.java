@@ -18,6 +18,7 @@ public class Maze {
     private List<List<Icon>> grid;
     private int rows, columns;
     private Player player = null;
+    private LinkedList<Icon> iconsToUpdate;
     /*
     WH 2 3, Horizontal _ above 2 3, below 2,2
     Therefore this means trace
@@ -50,6 +51,8 @@ public class Maze {
         parseMazeData(reader.getData());
 
         reader.closeReader();
+
+        iconsToUpdate = new LinkedList<>();
     }
 
     private void parseMazeData(Map<String, LinkedList<String>> data) throws MazeFormatException {
@@ -173,14 +176,11 @@ public class Maze {
                             int r = Integer.parseInt(split[0]);
                             int c = Integer.parseInt(split[1]);
                             Colour colour = Colour.matchColour(Integer.parseInt(split[2]));
-                            //Fixme there are two doors?
                             if(parsedKey.equals("DH")) { //If Horizontal
                                 this.putIcon(r, c, new Door(Direction.UP, colour, r, c));
-                                this.putIcon(r+1, c, new Door(Direction.DOWN, colour, r, c));
                             }
                             else { //If Vertical
                                 this.putIcon(r, c, new Door(Direction.LEFT, colour, r, c));
-                                this.putIcon(r, c-1, new Door(Direction.RIGHT, colour, r, c));
                             }
 
                         }
@@ -199,6 +199,8 @@ public class Maze {
         }
     }
 
+    public Player getPlayer() { return player; }
+
     @Nullable
     public Icon getIcon(int row, int column) {
         return 0 < row && row < rows && 0 < column && column < columns ? this.grid.get(row).get(column) : null;
@@ -209,19 +211,35 @@ public class Maze {
     }
 
     public void handlePlayerMove(Direction direction) {
-        if(canPlayerMove(direction)) {
-            player.move(direction);
+        Position newPos = new Position(player.row(), player.column());
+        newPos.move(direction);
+
+        /*
+        Let's say player is in square 2,3
+
+        There is a Door NORTH of 2,3. Hence it is also blocking SOUTH of 1,3
+        When player moves into a square it should run next.onMove ON THAT SQUARE, however should do so in opposite direction
+        (since player is moving between southern barrier of the next square)
+        onMove should also be called on the player's current square before they move in their intended direction.
+         */
+        Icon next = getIcon(newPos.row(), newPos.column());
+        if(next != null) { //If next is null, means that indicated position is out of bounds.
+            Icon prev = getIcon(player.row(), player.column());
+            if(prev.onMove(player, direction)) {
+                iconsToUpdate.addLast(prev);
+                if(next.onMove(player, direction.getOpposing())) {
+                    iconsToUpdate.addLast(next);
+                    //Since there will only be ONE door between two squares. Must check both that nothing is blocking on both
+                    //sides
+                    player.move(direction);
+                }
+            }
         }
     }
 
-    public boolean canPlayerMove(Direction direction) {
-        Position pos = player.getPos();
-        return switch(direction) {
-            case UP -> pos.row() - 1 >= 0;
-            case DOWN -> pos.row() + 1 < rows;
-            case LEFT -> pos.column() - 1 >= 0;
-            case RIGHT -> pos.column() + 1 < columns;
-        };
+    @Nullable
+    public Icon getNextIconToUpdate() {
+        return iconsToUpdate.isEmpty() ? null : iconsToUpdate.removeFirst();
     }
 
     /**

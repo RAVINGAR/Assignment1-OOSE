@@ -88,6 +88,30 @@ public enum Symbol {
         public boolean isApplicable(char up, char down, char left, char right) {
             return false;
         }
+    },
+    UP('^') {
+        @Override
+        public boolean isApplicable(char up, char down, char left, char right) {
+            return false;
+        }
+    },
+    DOWN('v') {
+        @Override
+        public boolean isApplicable(char up, char down, char left, char right) {
+            return false;
+        }
+    },
+    LEFT('<') {
+        @Override
+        public boolean isApplicable(char up, char down, char left, char right) {
+            return false;
+        }
+    },
+    RIGHT('>') {
+        @Override
+        public boolean isApplicable(char up, char down, char left, char right) {
+            return false;
+        }
     };
 
     private final char symbol;

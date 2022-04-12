@@ -1,6 +1,7 @@
 package com.ravingarinc.oose.assignment1.display;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
+import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 import com.ravingarinc.oose.assignment1.maze.Position;
@@ -17,13 +18,10 @@ import java.util.logging.Level;
 public class Viewer {
     private String[][] display;
     private String message;
-    private LinkedList<Icon> iconsToUpdate;
 
     public Viewer(Maze maze) {
         message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
         initialiseDisplay(maze);
-
-        iconsToUpdate = new LinkedList<>();
     }
 
     /**
@@ -43,11 +41,12 @@ public class Viewer {
                 String[][] symbol = icon.getSymbol();
                 if(symbol.length != 3 || symbol[0].length != 5) {
                     MazeApplication.log(Level.SEVERE, "Got invalid symbol from icon at row " + r + ", column " + c);
-                    continue;
                 }
-                for(int i = 0; i < 3; i++) {
-                    for(int j = 0; j < 5; j++) {
-                        display[r+i][c+j] = symbol[i][j];
+                else {
+                    for(int i = 0; i < 3; i++) {
+                        for(int j = 0; j < 5; j++) {
+                            display[r+i][c+j] = symbol[i][j];
+                        }
                     }
                 }
                 //Top left corner is [r][c]
@@ -66,13 +65,20 @@ public class Viewer {
                 Whilst this method is more complicated to understand it reduces overall runtime complexity
                 */
 
+                if(c == 0 || c == columns-1) { //The most left wall is at row = ?, c = 0, The most right wall is at row = ?, c = columns - 1
+                    display[r+1][c] = Symbol.VERTICAL_WALL.toString();
+                }
+
                 display[r][c] = Symbol.getApplicable(r, c, display); //Sets the top left corner
 
                 c++;
             }
+            if(r == 0 || r == rows-1) { //The most top wall is at row = 0, c = ?, The most bottom wall is at row = rows - 1, c = ?
+                display[r][c+1] = Symbol.HORIZONTAL_WALL.toString();
+            }
+
             //At this point, all corner icons above and left of the most right icon will be filled
             //We are able to now fill the top right corner since this is the most right icon here.
-
             display[r][c+4] = Symbol.getApplicable(r, c+4, display);
             r++;
         }
@@ -87,9 +93,16 @@ public class Viewer {
     }
 
     public void update(Maze maze) {
-        iconsToUpdate.forEach(this::updateIcon);
+        Player player = maze.getPlayer();
+        message = player.getMessage();
 
-        //Also update message here. And player movements
+        Icon icon = maze.getNextIconToUpdate();
+        while(icon != null) {
+            updateIcon(icon);
+            icon = maze.getNextIconToUpdate();
+        }
+
+        display[player.row()+1][player.column()+2] = player.getSymbol();
     }
 
     /** Will update a singular icon in the display maze at a specific location. This should be used to update keys and doors
@@ -118,5 +131,6 @@ public class Viewer {
             }
             System.out.print("\n");
         }
+        System.out.println(message);
     }
 }

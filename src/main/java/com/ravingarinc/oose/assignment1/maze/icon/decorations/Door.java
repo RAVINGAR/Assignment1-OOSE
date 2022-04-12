@@ -57,4 +57,8 @@ public class Door extends Additive {
         }
         return false;
     }
+
+    public void setOpen() {
+        this.isOpen = true;
+    }
 }
