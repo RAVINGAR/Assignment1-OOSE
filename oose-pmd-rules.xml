@@ -115,7 +115,7 @@
     <rule ref="category/java/errorprone.xml/ImplicitSwitchFallThrough" />
     <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables" />
     <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitchStmt" />
-    <rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault" />
+    <!--<rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault" /> Commented out because my switch statements ARE exhaustive ):< -->
     <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean" />
     <rule ref="category/java/codestyle.xml/ConfusingTernary" />
     <rule ref="category/java/codestyle.xml/ControlStatementBraces" />
