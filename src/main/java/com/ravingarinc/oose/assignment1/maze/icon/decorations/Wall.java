@@ -25,12 +25,8 @@ public class Wall extends Additive {
                     symbol[blocking == Direction.UP ? 0 : 2][i] = Symbol.HORIZONTAL_WALL.toString();
                 }
             }
-            case LEFT -> {
-                symbol[1][0] = Symbol.VERTICAL_WALL.toString();
-            }
-            case RIGHT -> {
-                symbol[1][4] = Symbol.VERTICAL_WALL.toString();
-            }
+            case LEFT -> symbol[1][0] = Symbol.VERTICAL_WALL.toString();
+            case RIGHT -> symbol[1][4] = Symbol.VERTICAL_WALL.toString();
         }
 
         return symbol;

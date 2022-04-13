@@ -1,7 +1,6 @@
 package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 
 import com.ravingarinc.oose.assignment1.character.Player;
-import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 
 /*

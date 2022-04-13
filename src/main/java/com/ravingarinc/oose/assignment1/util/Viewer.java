@@ -1,4 +1,4 @@
-package com.ravingarinc.oose.assignment1.display;
+package com.ravingarinc.oose.assignment1.util;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
@@ -15,13 +15,13 @@ public class Viewer {
     private String message;
 
     public Viewer(Maze maze) throws ViewerFormatError {
-        initialiseDisplay(maze);
+        init(maze);
     }
 
     /**
      * Transforms maze into a displayable format in terms of String values.
      */
-    public void initialiseDisplay(Maze maze) throws ViewerFormatError {
+    public void init(Maze maze) throws ViewerFormatError {
         int rows = maze.getRows();
         int columns = maze.getColumns();
         display = new String[1 + rows * 2][1 + columns * 4];
@@ -29,7 +29,7 @@ public class Viewer {
         Icon[][] grid = maze.getGrid();
 
         try {
-            int r, c, displayRow = 0, displayColumn = 0;
+            int r, c, displayRow, displayColumn = 0;
             for(r = 0; r < rows; r++) {
                 displayRow = r * 2;
                 for (c = 0; c < columns; c++) {
@@ -72,7 +72,7 @@ public class Viewer {
             }
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            throw new ViewerFormatError("Accessed array element of display outside of bounds! At " + e);
+            throw new ViewerFormatError("Accessed array element of display outside of bounds! At " + e, e);
         }
     }
 

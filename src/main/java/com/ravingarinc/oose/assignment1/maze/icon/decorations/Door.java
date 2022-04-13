@@ -29,12 +29,8 @@ public class Door extends Additive {
                     symbols[blocking == Direction.UP ? 0 : 2][i] = character;
                 }
             }
-            case LEFT -> {
-                symbols[1][0] = character;
-            }
-            case RIGHT -> {
-                symbols[1][4] = character;
-            }
+            case LEFT -> symbols[1][0] = character;
+            case RIGHT -> symbols[1][4] = character;
         }
         return symbols;
     }

@@ -1,6 +1,7 @@
-package com.ravingarinc.oose.assignment1.io;
+package com.ravingarinc.oose.assignment1.util;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
+import com.ravingarinc.oose.assignment1.util.MazeFormatException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,12 +17,12 @@ public class MazeReader {
 
     public MazeReader(String filename) throws MazeFormatException {
         if(filename == null || filename.isEmpty()) {
-            throw new MazeFormatException("Filename cannot be null or empty!");
+            throw new MazeFormatException("Filename cannot be null or empty!", MazeReader.class.getName(), 20);
         }
         try {
             reader = new BufferedReader(new FileReader(filename));
         } catch (FileNotFoundException e) {
-            throw new MazeFormatException("Could not find file with filename " + filename + "!");
+            throw new MazeFormatException("Could not find file with filename " + filename + "!", e);
         }
     }
 
@@ -34,11 +35,11 @@ public class MazeReader {
         try {
             line = reader.readLine();
             if(line == null || line.isEmpty() || line.split(" ").length != 2) {
-                throw new MazeFormatException("Initial line had incorrect format! First line read; \n" + line);
+                throw new MazeFormatException("Initial line had incorrect format! First line read; \n" + line, MazeReader.class.getName(), 38);
             }
         }
         catch(IOException e) {
-            throw new MazeFormatException("Encountered IOException! " + e);
+            throw new MazeFormatException("Encountered IOException! ", e);
         }
         return line;
     }

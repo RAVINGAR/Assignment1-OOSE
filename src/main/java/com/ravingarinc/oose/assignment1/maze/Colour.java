@@ -2,7 +2,6 @@ package com.ravingarinc.oose.assignment1.maze;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 

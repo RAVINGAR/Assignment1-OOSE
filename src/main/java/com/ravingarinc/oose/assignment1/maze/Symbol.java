@@ -111,7 +111,6 @@ public enum Symbol {
 
     /**
      * Strips away escape codes
-     * @param symbol
      * @return The char stripped of escape codes
      */
     private static char convertString(String symbol) {
@@ -123,7 +122,7 @@ public enum Symbol {
         This is the logic used in the below code.
         */
         //Every icon in the maze WILL have a code of \033[m
-        if(symbol != null) {;
+        if(symbol != null) {
             return symbol.charAt(symbol.length()-4);
         }
         else {

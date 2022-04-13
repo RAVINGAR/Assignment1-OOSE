@@ -1,18 +1,20 @@
 package com.ravingarinc.oose.assignment1;
 
-import com.ravingarinc.oose.assignment1.display.Viewer;
-import com.ravingarinc.oose.assignment1.display.ViewerFormatError;
-import com.ravingarinc.oose.assignment1.io.MazeFormatException;
+import com.ravingarinc.oose.assignment1.util.Viewer;
+import com.ravingarinc.oose.assignment1.util.ViewerFormatError;
+import com.ravingarinc.oose.assignment1.util.MazeFormatException;
+import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class MazeApplication {
-    private static final Logger logger = Logger.getLogger(MazeApplication.class.getName());
+    private static final Logger Log = Logger.getLogger(MazeApplication.class.getName());
 
     public static void main(String[] args) {
         final Maze maze = setupMaze();
@@ -62,7 +64,12 @@ public class MazeApplication {
                 }
             }
             catch(IOException e) {
-                viewer.setMessage("Something went wrong getting input!");
+                viewer.setMessage(Colour.RED + "Something went wrong getting input!" + e + Colour.BLANK);
+                Log.severe("Encountered issue during runtime!" + Arrays.toString(e.getStackTrace()));
+            }
+            catch(IllegalStateException e) {
+                viewer.setMessage(Colour.RED + "Something went wrong moving player! " + e + Colour.BLANK);
+                Log.severe("Encountered issue during runtime!" + Arrays.toString(e.getStackTrace()));
             }
 
             viewer.display(maze);
@@ -74,6 +81,6 @@ public class MazeApplication {
     }
 
     public static void log(Level level, String message) {
-        logger.log(level, message);
+        Log.log(level, message);
     }
 }

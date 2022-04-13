@@ -2,8 +2,8 @@ package com.ravingarinc.oose.assignment1.maze;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
 import com.ravingarinc.oose.assignment1.character.Player;
-import com.ravingarinc.oose.assignment1.io.MazeFormatException;
-import com.ravingarinc.oose.assignment1.io.MazeReader;
+import com.ravingarinc.oose.assignment1.util.MazeFormatException;
+import com.ravingarinc.oose.assignment1.util.MazeReader;
 import com.ravingarinc.oose.assignment1.maze.icon.*;
 import com.ravingarinc.oose.assignment1.maze.icon.decorations.*;
 import org.jetbrains.annotations.Nullable;
@@ -12,10 +12,10 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class Maze {
-    private Icon[][] grid;
+    private final Icon[][] grid;
     private int rows, columns;
     private Player player = null;
-    private LinkedList<Icon> iconsToUpdate;
+    private final LinkedList<Icon> iconsToUpdate;
     /*
     WH 2 3, Horizontal _ above 2 3, below 2,2
     Therefore this means trace
@@ -63,7 +63,7 @@ public class Maze {
             columns = Integer.parseInt(split[1]);
         }
         catch(NumberFormatException e) {
-            throw new MazeFormatException("Initial line used incorrect syntax for rows and columns! First line read; \n" + firstLine);
+            throw new MazeFormatException("Initial line used incorrect syntax for rows and columns! First line read; \n" + firstLine, e);
         }
     }
 
@@ -118,111 +118,99 @@ public class Maze {
                     }
 
                     if(player == null) {
-                        throw new MazeFormatException("Invalid maze file! No VALID start locations were specified!");
+                        throw new MazeFormatException("Invalid maze file! No VALID start locations were specified!", Maze.class.getName(), 121);
                     }
                 }
-                case "E" -> {
-                    list.forEach(element -> {
-                        String[] split = element.split(" ", 3);
-                        try {
-                            int r = Integer.parseInt(split[0]);
-                            int c = Integer.parseInt(split[1]);
-                            this.putIcon(r, c, new End(r, c));
+                case "E" -> list.forEach(element -> {
+                    String[] split = element.split(" ", 3);
+                    try {
+                        int r = Integer.parseInt(split[0]);
+                        int c = Integer.parseInt(split[1]);
+                        this.putIcon(r, c, new End(r, c));
+                    }
+                    catch(NumberFormatException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
+                    }
+                });
+                case "K" -> list.forEach(element -> {
+                    String[] split = element.split(" ", 3);
+                    try {
+                        int r = Integer.parseInt(split[0]);
+                        int c = Integer.parseInt(split[1]);
+                        this.putIcon(r, c, new Key(Colour.matchColour(Integer.parseInt(split[2])), r, c));
+                    }
+                    catch(NumberFormatException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        MazeApplication.log(Level.WARNING, "Key had no specified colour! Skipping..");
+                    }
+                });
+                case "M" -> list.forEach(element -> {
+                    String[] split = element.split(" ", 3);
+                    try {
+                        int r = Integer.parseInt(split[0]);
+                        int c = Integer.parseInt(split[1]);
+                        this.putIcon(r, c, new Message(split[2], r, c));
+                    }
+                    catch(NumberFormatException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                    }
+                });
+                case "WH", "WV" -> list.forEach(element -> {
+                    String[] split = element.split(" ", 3);
+                    try {
+                        int r = Integer.parseInt(split[0]);
+                        int c = Integer.parseInt(split[1]);
+                        if(parsedKey.equals("WH")) { //If Horizontal
+                            this.putIcon(r, c, new Wall(Direction.UP, r, c));
+                            this.putIcon(r-1, c, new Wall(Direction.DOWN, r-1, c));
                         }
-                        catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        else { //If Vertical
+                            this.putIcon(r, c, new Wall(Direction.LEFT, r, c));
+                            this.putIcon(r, c-1, new Wall(Direction.RIGHT, r, c-1));
                         }
-                        catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
-                        }
-                    });
-                }
-                case "K" -> {
-                    list.forEach(element -> {
-                        String[] split = element.split(" ", 3);
-                        try {
-                            int r = Integer.parseInt(split[0]);
-                            int c = Integer.parseInt(split[1]);
-                            this.putIcon(r, c, new Key(Colour.matchColour(Integer.parseInt(split[2])), r, c));
-                        }
-                        catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
-                        }
-                        catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Key had no specified colour! Skipping..");
-                        }
-                    });
-                }
-                case "M" -> {
-                    list.forEach(element -> {
-                        String[] split = element.split(" ", 3);
-                        try {
-                            int r = Integer.parseInt(split[0]);
-                            int c = Integer.parseInt(split[1]);
-                            this.putIcon(r, c, new Message(split[2], r, c));
-                        }
-                        catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
-                        }
-                        catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
-                        }
-                    });
-                }
-                case "WH", "WV" -> {
-                    list.forEach(element -> {
-                        String[] split = element.split(" ", 3);
-                        try {
-                            int r = Integer.parseInt(split[0]);
-                            int c = Integer.parseInt(split[1]);
-                            if(parsedKey.equals("WH")) { //If Horizontal
-                                this.putIcon(r, c, new Wall(Direction.UP, r, c));
-                                this.putIcon(r-1, c, new Wall(Direction.DOWN, r-1, c));
-                            }
-                            else { //If Vertical
-                                this.putIcon(r, c, new Wall(Direction.LEFT, r, c));
-                                this.putIcon(r, c-1, new Wall(Direction.RIGHT, r, c-1));
-                            }
 
+                    }
+                    catch(NumberFormatException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                    }
+                });
+                case "DH", "DV" -> list.forEach(element -> {
+                    String[] split = element.split(" ", 3);
+                    try {
+                        int r = Integer.parseInt(split[0]);
+                        int c = Integer.parseInt(split[1]);
+                        Colour colour = Colour.matchColour(Integer.parseInt(split[2]));
+                        if(parsedKey.equals("DH")) { //If Horizontal
+                            Door door = new Door(Direction.UP, colour, r, c);
+                            this.putIcon(r, c, door);
+                            this.putIcon(r-1, c, new FakeDoor(door, r-1, c));
                         }
-                        catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        else { //If Vertical
+                            Door door = new Door(Direction.LEFT, colour, r, c);
+                            this.putIcon(r, c, door);
+                            this.putIcon(r, c-1, new FakeDoor(door, r, c-1));
                         }
-                        catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
-                        }
-                    });
-                }
-                case "DH", "DV" -> {
-                    list.forEach(element -> {
-                        String[] split = element.split(" ", 3);
-                        try {
-                            int r = Integer.parseInt(split[0]);
-                            int c = Integer.parseInt(split[1]);
-                            Colour colour = Colour.matchColour(Integer.parseInt(split[2]));
-                            if(parsedKey.equals("DH")) { //If Horizontal
-                                Door door = new Door(Direction.UP, colour, r, c);
-                                this.putIcon(r, c, door);
-                                this.putIcon(r-1, c, new FakeDoor(door, r-1, c));
-                            }
-                            else { //If Vertical
-                                Door door = new Door(Direction.LEFT, colour, r, c);
-                                this.putIcon(r, c, door);
-                                this.putIcon(r, c-1, new FakeDoor(door, r, c-1));
-                            }
 
-                        }
-                        catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
-                        }
-                        catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Door had no colour! Skipping..");
-                        }
-                    });
-                }
-                default -> {
-                    MazeApplication.log(Level.SEVERE, "Found maze data element that should NOT be present. Skipping..");
-                }
+                    }
+                    catch(NumberFormatException e) {
+                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                    }
+                    catch(ArrayIndexOutOfBoundsException e) {
+                        MazeApplication.log(Level.WARNING, "Door had no colour! Skipping..");
+                    }
+                });
+                default -> MazeApplication.log(Level.SEVERE, "Found maze data element that should NOT be present. Skipping..");
             }
         }
 
@@ -286,10 +274,16 @@ public class Maze {
         onMove should also be called on the player's current square before they move in their intended direction.
          */
         Icon prev = getIcon(player.row(), player.column());
+        if(prev == null) {
+            throw new IllegalStateException("Player's current icon was null but it shouldn't be!?");
+        }
         if(prev.onMoveFrom(player, direction)) {
             iconsToUpdate.addLast(prev);
             Icon next = getIcon(newPos.row(), newPos.column());
             //Next should not be null since if prev was a boundary, there SHOULD be a wall there.
+            if(next == null) {
+                throw new IllegalStateException("Player's next icon was null but it shouldn't be!?");
+            }
             if(next.onMoveTo(player, direction.getOpposing())) {
                 iconsToUpdate.addLast(next);
                 //Since there will only be ONE door between two squares. Must check both that nothing is blocking on both
