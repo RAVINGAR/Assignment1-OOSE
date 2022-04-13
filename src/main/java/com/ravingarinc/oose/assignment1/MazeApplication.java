@@ -47,6 +47,7 @@ public class MazeApplication {
                 viewer = new Viewer(maze);
             }
             catch(MazeErrorException e) {
+                System.out.print(e.getMessage());
                 logMessage(Level.SEVERE, e.getMessage());
             }
         }
