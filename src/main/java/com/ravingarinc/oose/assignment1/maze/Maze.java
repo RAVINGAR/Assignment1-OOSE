@@ -13,10 +13,10 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class Maze {
-    private final Icon[][] grid;
+    private Icon[][] grid;
     private int rows, columns;
     private Player player = null;
-    private final List<Icon> iconsToUpdate;
+    private List<Icon> iconsToUpdate;
 
     public Maze(String filename) throws MazeErrorException, IllegalMazeException {
         //We use an object for the reader so that only ONE BufferedReader needs to created to read the entire file.
@@ -218,7 +218,7 @@ public class Maze {
         return 0 <= row && row < rows && 0 <= column && column < columns ? this.grid[row][column] : null;
     }
 
-    public void handlePlayerMove(Direction direction) {
+    public void handlePlayerMove(Direction direction) throws IllegalMazeException {
         Position newPos = new Position(player.row(), player.column());
         newPos.move(direction);
 
@@ -232,14 +232,14 @@ public class Maze {
          */
         Icon prev = getIcon(player.row(), player.column());
         if(prev == null) {
-            throw new IllegalStateException("Player's current icon was null but it shouldn't be!?");
+            throw new IllegalMazeException("Player's current icon was null but it shouldn't be!?", Maze.class.getName(), 235);
         }
         if(prev.onMoveFrom(player, direction)) {
             iconsToUpdate.add(prev);
             Icon next = getIcon(newPos.row(), newPos.column());
             //Next should not be null since if prev was a boundary, there SHOULD be a wall there.
             if(next == null) {
-                throw new IllegalStateException("Player's next icon was null but it shouldn't be!?");
+                throw new IllegalMazeException("Player's next icon was null but it shouldn't be!?", Maze.class.getName(), 242);
             }
             if(next.onMoveTo(player, direction.getOpposing())) {
                 iconsToUpdate.add(next);

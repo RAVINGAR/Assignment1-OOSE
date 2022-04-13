@@ -9,7 +9,6 @@ import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,11 +55,11 @@ public class MazeApplication {
 
     private static void run(Maze maze, Viewer viewer) {
         viewer.display(maze);
-
         boolean running = true;
         while(running) {
             try {
                 viewer.setMessage("Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!");
+
                 Direction input = Direction.getDirectionInput((char)System.in.read());
                 if(input != null) {
                     maze.handlePlayerMove(input);
@@ -68,11 +67,11 @@ public class MazeApplication {
             }
             catch(IOException e) {
                 viewer.setMessage(Colour.RED + "Something went wrong getting input!" + Colour.BLANK);
-                logMessage(Level.SEVERE, () -> "Encountered issue during runtime!" + Arrays.toString(e.getStackTrace()));
+                logMessage(Level.SEVERE, () -> "Encountered issue during runtime!" + e.getMessage());
             }
-            catch(IllegalStateException e) {
+            catch(IllegalMazeException e) {
                 viewer.setMessage(Colour.RED + "Something went wrong moving player! " + Colour.BLANK);
-                logMessage(Level.SEVERE, () -> "Encountered issue during runtime!" + Arrays.toString(e.getStackTrace()));
+                logMessage(Level.SEVERE, () -> "Encountered issue during runtime!" + e.getMessage());
             }
 
             viewer.display(maze);
@@ -81,6 +80,7 @@ public class MazeApplication {
                 running = false;
             }
         }
+        viewer.display(maze);
     }
 
     public static void logMessage(Level level, String message) {

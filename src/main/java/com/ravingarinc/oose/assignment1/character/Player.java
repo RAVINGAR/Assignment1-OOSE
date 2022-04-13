@@ -25,6 +25,7 @@ public class Player {
         }
         position = new Position(row, column);
         symbol = Colour.WHITE + Symbol.UP.toString();
+        message = "";
     }
 
     public boolean hasKey(Colour colour) {

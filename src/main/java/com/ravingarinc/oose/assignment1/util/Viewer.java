@@ -29,7 +29,7 @@ public class Viewer {
         Icon[][] grid = maze.getGrid();
 
         try {
-            int r, c, displayRow, displayColumn = 0;
+            int r, c, displayRow = 0, displayColumn = 0;
             for(r = 0; r < rows; r++) {
                 displayRow = r * 2;
                 for (c = 0; c < columns; c++) {
@@ -118,8 +118,8 @@ public class Viewer {
         update(maze);
 
         System.out.print(Colour.GREEN + "== The Untitled Maze Game ==" + Colour.BLANK + "\n");
-        for(int r = 0; r < maze.getRows(); r++) {
-            for(int c = 0; c < maze.getColumns(); c++) {
+        for(int r = 0; r < display.length; r++) {
+            for(int c = 0; c < display[0].length; c++) {
                 System.out.print(display[r][c]);
             }
             System.out.print("\n");
