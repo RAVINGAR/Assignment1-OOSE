@@ -17,14 +17,16 @@ public class Player {
     private Position position;
     private String message;
     private String symbol;
+    private boolean finished;
 
     public Player(int row, int column) {
         keys = new HashMap<>();
+        finished = false;
         for(Colour c : Colour.values()) {
             keys.put(c, 0);
         }
         position = new Position(row, column);
-        message = "";
+        message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
         symbol = Colour.WHITE + Symbol.UP.toString();
     }
 
@@ -46,6 +48,12 @@ public class Player {
             keys.put(colour, i-1);
         }
     }
+
+    public void finishGame() {
+        finished = true;
+    }
+
+    public boolean isFinished() { return finished; }
 
     public void move(Direction direction) {
         symbol = Colour.WHITE + direction.getSymbol();

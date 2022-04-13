@@ -5,7 +5,7 @@ import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Position;
 
 public class Element implements Icon {
-    private final Position position;
+    protected final Position position;
 
     public Element(int row, int column) {
         this.position = new Position(row, column);
@@ -24,11 +24,13 @@ public class Element implements Icon {
 
     @Override
     public boolean onMoveTo(Player player, Direction direction) {
+        player.sendMessage("");
         return true;
     }
 
     @Override
     public boolean onMoveFrom(Player player, Direction direction) {
+        player.sendMessage("");
         return true;
     }
 

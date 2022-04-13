@@ -177,11 +177,11 @@ public class Maze {
                             int c = Integer.parseInt(split[1]);
                             if(parsedKey.equals("WH")) { //If Horizontal
                                 this.putIcon(r, c, new Wall(Direction.UP, r, c));
-                                this.putIcon(r+1, c, new Wall(Direction.DOWN, r, c));
+                                this.putIcon(r-1, c, new Wall(Direction.DOWN, r-1, c));
                             }
                             else { //If Vertical
                                 this.putIcon(r, c, new Wall(Direction.LEFT, r, c));
-                                this.putIcon(r, c-1, new Wall(Direction.RIGHT, r, c));
+                                this.putIcon(r, c-1, new Wall(Direction.RIGHT, r, c-1));
                             }
 
                         }
@@ -201,10 +201,14 @@ public class Maze {
                             int c = Integer.parseInt(split[1]);
                             Colour colour = Colour.matchColour(Integer.parseInt(split[2]));
                             if(parsedKey.equals("DH")) { //If Horizontal
-                                this.putIcon(r, c, new Door(Direction.UP, colour, r, c));
+                                Door door = new Door(Direction.UP, colour, r, c);
+                                this.putIcon(r, c, door);
+                                this.putIcon(r-1, c, new FakeDoor(door, r-1, c));
                             }
                             else { //If Vertical
-                                this.putIcon(r, c, new Door(Direction.LEFT, colour, r, c));
+                                Door door = new Door(Direction.LEFT, colour, r, c);
+                                this.putIcon(r, c, door);
+                                this.putIcon(r, c-1, new FakeDoor(door, r, c-1));
                             }
 
                         }
@@ -225,6 +229,8 @@ public class Maze {
         fillEmptySpaces();
         fillBorderWalls();
     }
+
+    public boolean finished() { return player.isFinished(); }
 
     private void fillEmptySpaces() {
         for(int r = 0; r < rows; r++) {

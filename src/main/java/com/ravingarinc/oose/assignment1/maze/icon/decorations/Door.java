@@ -6,9 +6,9 @@ import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
 
 public class Door extends Additive {
-    private final Direction blocking;
-    private final Colour colour;
-    private boolean isOpen;
+    protected final Direction blocking;
+    protected final Colour colour;
+    private boolean isOpen; //This is private intentionally, as we don't want the FakeDoor being able to modify this.
 
     public Door(Direction blocking, Colour colour, int row, int column) {
         super(row, column);
@@ -42,26 +42,7 @@ public class Door extends Additive {
     @Override
     public boolean onMoveTo(Player player, Direction direction) {
         if(next.onMoveTo(player, direction)) {
-            if(!isOpen) {
-                if(direction == blocking) {
-                    if(player.hasKey(colour)) {
-                        player.removeKey(colour);
-                        isOpen = true;
-                        player.sendMessage("You have unlocked the door!");
-                        return true;
-                    }
-                    else {
-                        player.sendMessage("A magical " + colour.getReadableName() + " door blocks your way!");
-                        return false;
-                    }
-                }
-                else {
-                    return true;
-                }
-            }
-            else {
-                return true;
-            }
+            return checkDoor(player, direction);
         }
         return false;
     }
@@ -69,18 +50,37 @@ public class Door extends Additive {
     @Override
     public boolean onMoveFrom(Player player, Direction direction) {
         if(next.onMoveFrom(player, direction)) {
-            if(!isOpen) {
-                if(direction == blocking && player.hasKey(colour)) {
+            return checkDoor(player, direction);
+        }
+        return false;
+    }
+
+    protected boolean checkDoor(Player player, Direction direction) {
+        if(!isOpen) {
+            if(direction == blocking) {
+                if(player.hasKey(colour)) {
                     player.removeKey(colour);
                     isOpen = true;
                     player.sendMessage("You have unlocked the door!");
                     return true;
+                }
+                else {
+                    player.sendMessage("A magical " + colour.getReadableName() + " door blocks your way!");
+                    return false;
                 }
             }
             else {
                 return true;
             }
         }
-        return false;
+        else {
+            return true;
+        }
     }
+
+    protected boolean isOpen() { return isOpen; }
+
+    protected Direction getBlockDirection() { return blocking; }
+
+    protected Colour getDoorColour() { return colour; }
 }

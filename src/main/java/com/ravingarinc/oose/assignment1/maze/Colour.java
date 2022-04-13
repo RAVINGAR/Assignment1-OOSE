@@ -13,7 +13,8 @@ public enum Colour {
     BLUE("34"),
     MAGENTA("35"),
     CYAN("36"),
-    WHITE("37");
+    WHITE("37"),
+    BLANK("");
 
     private final String code;
 

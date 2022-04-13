@@ -38,28 +38,31 @@ public class Wall extends Additive {
 
     @Override
     public boolean onMoveTo(Player player, Direction direction) {
-        if(direction == blocking) {
-            player.sendMessage("You cannot move that way!");
-            return false;
+        if(next.onMoveTo(player, direction)) {
+            return checkWall(player, direction);
         }
         else {
-            return next.onMoveTo(player, direction);
+            return false;
         }
     }
 
     @Override
     public boolean onMoveFrom(Player player, Direction direction) {
         if(next.onMoveFrom(player, direction)) {
-            if(direction == blocking) {
-                player.sendMessage("You cannot move that way!");
-                return false;
-            }
-            else {
-                return true;
-            }
+            return checkWall(player, direction);
         }
         else {
             return false;
+        }
+    }
+
+    private boolean checkWall(Player player, Direction direction) {
+        if(direction == blocking) {
+            player.sendMessage("You cannot move that way!");
+            return false;
+        }
+        else {
+            return true;
         }
     }
 }

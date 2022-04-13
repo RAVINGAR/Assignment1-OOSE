@@ -30,7 +30,7 @@ public enum Symbol {
     },
     DOOR('▒'),
     KEY('╕'),
-    END('E'),
+    END('X'),
     UP('^'),
     DOWN('v'),
     LEFT('<'),

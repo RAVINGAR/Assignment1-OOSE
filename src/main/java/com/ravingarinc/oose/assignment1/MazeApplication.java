@@ -51,10 +51,10 @@ public class MazeApplication {
     }
 
     private static void run(Maze maze, Viewer viewer) {
+        viewer.display(maze);
+
         boolean running = true;
         while(running) {
-            viewer.update(maze);
-            viewer.display();
             try {
                 Direction input = Direction.getDirectionInput((char)System.in.read());
                 if(input != null) {
@@ -63,6 +63,12 @@ public class MazeApplication {
             }
             catch(IOException e) {
                 viewer.setMessage("Something went wrong getting input!");
+            }
+
+            viewer.display(maze);
+
+            if(maze.finished()) {
+                running = false;
             }
         }
     }

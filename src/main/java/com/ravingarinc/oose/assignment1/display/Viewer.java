@@ -6,6 +6,7 @@ import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 import com.ravingarinc.oose.assignment1.maze.Position;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
+import com.ravingarinc.oose.assignment1.maze.icon.Element;
 import com.ravingarinc.oose.assignment1.maze.icon.Icon;
 
 import java.util.LinkedList;
@@ -20,7 +21,6 @@ public class Viewer {
     private String message;
 
     public Viewer(Maze maze) throws ViewerFormatError {
-        message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
         initialiseDisplay(maze);
     }
 
@@ -69,12 +69,6 @@ public class Viewer {
 
                     Whilst this method is more complicated to understand it reduces overall runtime complexity
                     */
-                    //0,1,2,3,4
-                    //1
-                    //2
-
-
-
 
                     display[displayRow][displayColumn] = Symbol.getApplicable(displayRow, displayColumn, display); //Sets the top left corner
                 }
@@ -100,7 +94,7 @@ public class Viewer {
         this.message = message;
     }
 
-    public void update(Maze maze) {
+    private void update(Maze maze) {
         Player player = maze.getPlayer();
         message = player.getMessage();
 
@@ -110,7 +104,7 @@ public class Viewer {
             icon = maze.getNextIconToUpdate();
         }
 
-        display[player.row() * 2 + 1][player.column() * 4 +2] = player.getSymbol();
+        display[player.row() * 2 + 1][player.column() * 4 + 2] = player.getSymbol();
     }
 
     /** Will update a singular icon in the display maze at a specific location. This should be used to update keys and doors
@@ -124,6 +118,7 @@ public class Viewer {
         int row = pos.row();
         int column = pos.column();
 
+        //fixme we know that symbol actually has the correct things.. just wondering why it no work
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 5; j++) {
                 if(!((i == 0 && (j == 0 || j == 4)) || (i == 2 && (j == 0 || j == 4)))) {
@@ -133,10 +128,12 @@ public class Viewer {
         }
     }
 
-    public void display() {
-        System.out.print("\033[2J" + Colour.GREEN + "== The Untitled Maze Game ==\033[m\n");
-        for(int r = 0; r < display.length; r++) {
-            for(int c = 0; c < display[0].length; c++) {
+    public void display(Maze maze) {
+        update(maze);
+
+        System.out.print(Colour.GREEN + "== The Untitled Maze Game ==\033[m\n");
+        for(int r = 0; r < maze.getRows(); r++) {
+            for(int c = 0; c < maze.getColumns(); c++) {
                 System.out.print(display[r][c]);
             }
             System.out.print("\n");
