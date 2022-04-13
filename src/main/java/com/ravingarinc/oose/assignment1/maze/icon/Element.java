@@ -3,9 +3,12 @@ package com.ravingarinc.oose.assignment1.maze.icon;
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Position;
+import com.ravingarinc.oose.assignment1.maze.Symbol;
 
 public class Element implements Icon {
     protected final Position position;
+
+    private final static String defaultMessage = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
 
     public Element(int row, int column) {
         this.position = new Position(row, column);
@@ -24,19 +27,19 @@ public class Element implements Icon {
 
     @Override
     public boolean onMoveTo(Player player, Direction direction) {
-        player.sendMessage("");
+        player.sendMessage(defaultMessage);
         return true;
     }
 
     @Override
     public boolean onMoveFrom(Player player, Direction direction) {
-        player.sendMessage("");
+        player.sendMessage(defaultMessage);
         return true;
     }
 
     @Override
     public void setNext(Icon next) {
-        throw new IllegalCallerException("Cannot set next on base element!");
+        throw new IllegalStateException("Cannot set next on base element!");
     }
 
     @Override

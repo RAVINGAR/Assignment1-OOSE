@@ -1,17 +1,11 @@
 package com.ravingarinc.oose.assignment1.display;
 
-import com.ravingarinc.oose.assignment1.MazeApplication;
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 import com.ravingarinc.oose.assignment1.maze.Position;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
-import com.ravingarinc.oose.assignment1.maze.icon.Element;
 import com.ravingarinc.oose.assignment1.maze.icon.Icon;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Class responsible for providing a display image to the user and printing to terminal.
@@ -32,14 +26,6 @@ public class Viewer {
         int columns = maze.getColumns();
         display = new String[1 + rows * 2][1 + columns * 4];
 
-        /*
-         0 1 2 3 4 5 6 7 8
-        0        |
-        1        |
-        2        +
-        4
-        5
-         */
         Icon[][] grid = maze.getGrid();
 
         try {
@@ -118,10 +104,10 @@ public class Viewer {
         int row = pos.row();
         int column = pos.column();
 
-        //fixme we know that symbol actually has the correct things.. just wondering why it no work
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 5; j++) {
                 if(!((i == 0 && (j == 0 || j == 4)) || (i == 2 && (j == 0 || j == 4)))) {
+                    //The above if statement makes sure that symbols aren't placed in the corners.
                     display[row * 2 + i][column * 4 + j] = symbol[i][j];
                 }
             }
@@ -131,7 +117,7 @@ public class Viewer {
     public void display(Maze maze) {
         update(maze);
 
-        System.out.print(Colour.GREEN + "== The Untitled Maze Game ==\033[m\n");
+        System.out.print(Colour.GREEN + "== The Untitled Maze Game ==" + Colour.BLANK);
         for(int r = 0; r < maze.getRows(); r++) {
             for(int c = 0; c < maze.getColumns(); c++) {
                 System.out.print(display[r][c]);

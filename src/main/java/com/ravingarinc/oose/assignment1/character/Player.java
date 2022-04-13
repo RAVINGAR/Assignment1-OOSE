@@ -26,7 +26,6 @@ public class Player {
             keys.put(c, 0);
         }
         position = new Position(row, column);
-        message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
         symbol = Colour.WHITE + Symbol.UP.toString();
     }
 
