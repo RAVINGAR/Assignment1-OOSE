@@ -3,7 +3,6 @@ package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
-import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
 public class Wall extends Additive {
     private final Direction blocking;
@@ -38,13 +37,29 @@ public class Wall extends Additive {
     }
 
     @Override
-    public boolean onMove(Player player, Direction direction) {
+    public boolean onMoveTo(Player player, Direction direction) {
         if(direction == blocking) {
             player.sendMessage("You cannot move that way!");
             return false;
         }
         else {
-            return next.onMove(player, direction);
+            return next.onMoveTo(player, direction);
+        }
+    }
+
+    @Override
+    public boolean onMoveFrom(Player player, Direction direction) {
+        if(next.onMoveFrom(player, direction)) {
+            if(direction == blocking) {
+                player.sendMessage("You cannot move that way!");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
         }
     }
 }

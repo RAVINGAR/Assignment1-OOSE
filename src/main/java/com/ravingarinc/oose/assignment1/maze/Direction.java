@@ -18,4 +18,14 @@ public enum Direction {
     public String getSymbol() {
         return Symbol.valueOf(this.name()).toString();
     }
+
+    public static Direction getDirectionInput(char input) {
+        return switch(input) {
+            case 'w', 'W' -> Direction.UP;
+            case 's', 'S' -> Direction.DOWN;
+            case 'a', 'A' -> Direction.LEFT;
+            case 'd', 'D' -> Direction.RIGHT;
+            default -> null;
+        };
+    }
 }

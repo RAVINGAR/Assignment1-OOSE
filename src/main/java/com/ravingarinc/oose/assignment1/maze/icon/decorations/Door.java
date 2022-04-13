@@ -4,7 +4,6 @@ import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
-import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
 public class Door extends Additive {
     private final Direction blocking;
@@ -20,7 +19,6 @@ public class Door extends Additive {
 
     @Override
     public String[][] getSymbol() {
-        //FIXME The issue of how there are two doors on one plane...
         String[][] symbols = next.getSymbol();
 
         String character = isOpen ? " " : colour.toString() + Symbol.DOOR;
@@ -42,23 +40,47 @@ public class Door extends Additive {
     }
 
     @Override
-    public boolean onMove(Player player, Direction direction) {
-        if (direction == blocking && !isOpen) {
-            if(next.onMove(player, direction)) {
-                if (player.hasKey(colour)) {
-                    player.removeKey(colour);
-                    this.isOpen = true;
-                    player.sendMessage("You have unlocked the door!");
+    public boolean onMoveTo(Player player, Direction direction) {
+        if(next.onMoveTo(player, direction)) {
+            if(!isOpen) {
+                if(direction == blocking) {
+                    if(player.hasKey(colour)) {
+                        player.removeKey(colour);
+                        isOpen = true;
+                        player.sendMessage("You have unlocked the door!");
+                        return true;
+                    }
+                    else {
+                        player.sendMessage("A magical " + colour.getReadableName() + " door blocks your way!");
+                        return false;
+                    }
+                }
+                else {
                     return true;
                 }
             }
-        } else {
-            return next.onMove(player, direction);
+            else {
+                return true;
+            }
         }
         return false;
     }
 
-    public void setOpen() {
-        this.isOpen = true;
+    @Override
+    public boolean onMoveFrom(Player player, Direction direction) {
+        if(next.onMoveFrom(player, direction)) {
+            if(!isOpen) {
+                if(direction == blocking && player.hasKey(colour)) {
+                    player.removeKey(colour);
+                    isOpen = true;
+                    player.sendMessage("You have unlocked the door!");
+                    return true;
+                }
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
     }
 }

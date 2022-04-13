@@ -2,121 +2,61 @@ package com.ravingarinc.oose.assignment1.maze;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
 
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public enum Symbol {
+    TOP_LEFT_CORNER('┌', false, true, false, true),
+    TOP_RIGHT_CORNER('┐', false, true, true, false),
+    BOTTOM_LEFT_CORNER('└', true, false, false, true),
+    BOTTOM_RIGHT_CORNER('┘', true, false, true, false),
+    LEFT_T('├', true, true, false, true),
+    RIGHT_T('┤', true, true, true, false),
+    TOP_T('┬', false, true, true, true),
+    BOTTOM_T('┴', true, false, true, true),
+    CROSSWAY('┼', true, true, true, true),
     HORIZONTAL_WALL('─') {
         @Override
         public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
+            //These can't use a predicate due to or condition. And due to the nature of Java you can't reference local fields, on static ones.
+            return up == ' ' && down == ' ' && (left == '─' || left == '▒') || (right == '─' || right == '▒');
         }
     },
     VERTICAL_WALL('│') {
         @Override
         public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
+            return (up == '│' || up == '▒') || (down == '│' || down == '▒') && left == ' ' && right == ' ';
         }
     },
-    TOP_LEFT_CORNER('┌') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == ' ' && down == '│' && left == ' ' && right == '─';
-        }
-    }, //Applicable if UP is ' ', DOWN is '|', LEFT is ' ', RIGHT is '-'
-    TOP_RIGHT_CORNER('┐') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == ' ' && down == '│' && left == '─' && right == ' ';
-        }
-    }, //Applicable if UP is ' ', DOWN is '|', LEFT is '-', RIGHT is ''
-    BOTTOM_LEFT_CORNER('└') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == ' ' && left == ' ' && right == '─';
-        }
-    }, //Applicable if UP is '|', DOWN is '', LEFT is ' ', RIGHT is '-'
-    BOTTOM_RIGHT_CORNER('┘') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == ' ' && left == '─' && right == ' ';
-        }
-    }, //Applicable if UP is '|', DOWN is '', LEFT is '-', RIGHT is ''
-    LEFT_T('├') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == '│' && left == ' ' && right == '─';
-        }
-    }, //Applicable if UP is '|', DOWN is '|', LEFT is ' ', RIGHT is '─'
-    RIGHT_T('┤') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == '│' && left == '─' && right == ' ';
-        }
-    }, //Applicable if UP is '|', DOWN is '|', LEFT is '-', RIGHT is ''
-    TOP_T('┬') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == ' ' && down == '│' && left == '─' && right == '─';
-        }
-    }, //Applicable if UP is ' ', DOWN is '|', LEFT is '-', RIGHT is '-'
-    BOTTOM_T('┴') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == ' ' && left == '─' && right == '─';
-        }
-    }, //Applicable if UP is '|', DOWN is '', LEFT is '-', RIGHT is '-'
-    CROSSWAY('┼') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return up == '│' && down == '│' && left == '─' && right == '─';
-        }
-    }, //Applicable if UP is '|', DOWN is '|', LEFT is '-', RIGHT is '-'
-    DOOR('▒') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    KEY('╕') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    END('E') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    UP('^') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    DOWN('v') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    LEFT('<') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    },
-    RIGHT('>') {
-        @Override
-        public boolean isApplicable(char up, char down, char left, char right) {
-            return false;
-        }
-    };
+    DOOR('▒'),
+    KEY('╕'),
+    END('E'),
+    UP('^'),
+    DOWN('v'),
+    LEFT('<'),
+    RIGHT('>');
 
     private final char symbol;
+
+    private final Predicate<Character> upPredicate;
+    private final Predicate<Character> downPredicate;
+    private final Predicate<Character> leftPredicate;
+    private final Predicate<Character> rightPredicate;
+
     Symbol(char symbol) {
         this.symbol = symbol;
+        this.upPredicate = u -> false;
+        this.downPredicate = u -> false;
+        this.leftPredicate = u -> false;
+        this.rightPredicate = u -> false;
+    }
+
+    Symbol(char symbol, boolean up, boolean down, boolean left, boolean right) {
+        this.symbol = symbol;
+        this.upPredicate = up ? v -> (v == '│' || v == '▒') : e -> e == ' ';
+        this.downPredicate = down ? v -> (v == '│' || v == '▒') : e -> e == ' ';
+        this.leftPredicate = left ? h -> (h == '─' || h == '▒') : e -> e == ' ';
+        this.rightPredicate = right ? h -> (h == '─' || h == '▒') : e -> e == ' ';
     }
 
     @Override
@@ -179,15 +119,19 @@ public enum Symbol {
         How String.length() works
 
         If symbol == "\033[31m" that is length OF 5
-        If symbol == "\033[31mE" that is length OF 6. And will display a RED E
+        If symbol == "\033[31mE\033[m" that is length OF 9. E is at the int of 5
         This is the logic used in the below code.
         */
-        int index = 0;
-        if(symbol.contains("\033")) {
-            index = 5;
+        //Every icon in the maze WILL have a code of \033[m
+        if(symbol != null) {;
+            return symbol.charAt(symbol.length()-4);
         }
-        return symbol.charAt(index);
+        else {
+            return ' ';
+        }
     }
 
-    public abstract boolean isApplicable(char up, char down, char left, char right);
+    public boolean isApplicable(char up, char down, char left, char right) {
+        return upPredicate.test(up) && downPredicate.test(down) && leftPredicate.test(left) && rightPredicate.test(right);
+    }
 }

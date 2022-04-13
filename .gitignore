@@ -4,6 +4,8 @@
 # exclude patterns (uncomment them if you want to use them):
 # *.[oa]
 # *~
+/.idea/*
+/.gradle/*
 /.idea/.gitignore
 /.idea/.name
 /.gradle/buildOutputCleanup/buildOutputCleanup.lock

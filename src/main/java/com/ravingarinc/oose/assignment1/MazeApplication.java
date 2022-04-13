@@ -1,44 +1,70 @@
 package com.ravingarinc.oose.assignment1;
 
 import com.ravingarinc.oose.assignment1.display.Viewer;
+import com.ravingarinc.oose.assignment1.display.ViewerFormatError;
 import com.ravingarinc.oose.assignment1.io.MazeFormatException;
+import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class MazeApplication {
     private static final Logger logger = Logger.getLogger(MazeApplication.class.getName());
 
     public static void main(String[] args) {
         final Maze maze = setupMaze();
-
         final Viewer viewer = setupViewer(maze);
 
-        viewer.initialiseDisplay(maze);
-        viewer.display();
+        if(maze == null || viewer == null) {
+            System.out.println("Encountered errors on load. Program will now exit.");
+        }
+        else {
+            run(maze, viewer);
+        }
     }
 
     private static Maze setupMaze() {
-        Maze maze;
+        Maze maze = null;
         try {
-            /*
-            The reason that MazeReader is used as an object rather than as a static utility class is due to a number of
-            reasons; mainly reason is to reduce the amount of parameters that need to be passed between multiple method calls.
-            This is further explained in the MazeReader class itself.
-             */
             maze = new Maze("maze.txt");
-
         }
         catch(MazeFormatException e) {
             log(Level.SEVERE, e.getMessage());
-            maze = null;
         }
         return maze;
     }
 
     private static Viewer setupViewer(Maze maze) {
-        return new Viewer(maze);
+        Viewer viewer = null;
+        if(maze != null) {
+            try {
+                viewer = new Viewer(maze);
+            }
+            catch(ViewerFormatError e) {
+                log(Level.SEVERE, e.getMessage());
+            }
+        }
+        return viewer;
+    }
+
+    private static void run(Maze maze, Viewer viewer) {
+        boolean running = true;
+        while(running) {
+            viewer.update(maze);
+            viewer.display();
+            try {
+                Direction input = Direction.getDirectionInput((char)System.in.read());
+                if(input != null) {
+                    maze.handlePlayerMove(input);
+                }
+            }
+            catch(IOException e) {
+                viewer.setMessage("Something went wrong getting input!");
+            }
+        }
     }
 
     public static void log(Level level, String message) {

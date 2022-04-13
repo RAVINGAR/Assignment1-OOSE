@@ -2,7 +2,6 @@ package com.ravingarinc.oose.assignment1.maze.icon.decorations;
 
 import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Direction;
-import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
 public class Message extends Additive {
     private final String message;
@@ -13,8 +12,8 @@ public class Message extends Additive {
     }
 
     @Override
-    public boolean onMove(Player player, Direction direction) {
-        if(next.onMove(player, direction)) {
+    public boolean onMoveTo(Player player, Direction direction) {
+        if(next.onMoveTo(player, direction)) {
             player.sendMessage(message);
             return true;
         }

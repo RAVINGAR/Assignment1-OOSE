@@ -28,7 +28,10 @@ public abstract class Additive implements Icon {
     }
 
     @Override
-    public boolean onMove(Player player, Direction direction) {
-        return next.onMove(player, direction);
+    public boolean onMoveTo(Player player, Direction direction) {
+        return next.onMoveTo(player, direction);
     }
+
+    @Override
+    public boolean onMoveFrom(Player player, Direction direction) { return next.onMoveFrom(player, direction); }
 }

@@ -4,7 +4,6 @@ import com.ravingarinc.oose.assignment1.character.Player;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
-import com.ravingarinc.oose.assignment1.maze.icon.decorations.Additive;
 
 public class Key extends Additive {
     private final Colour colour;
@@ -32,8 +31,8 @@ public class Key extends Additive {
 
     //For keys this should be the LAST item in the chain to be called.
     //Since it must check if players can go through doors or not
-    public boolean onMove(Player player, Direction direction) {
-        if(next.onMove(player, direction)) {
+    public boolean onMoveTo(Player player, Direction direction) {
+        if(next.onMoveTo(player, direction)) {
             if(!pickedUp) {
                 player.addKey(colour);
                 pickedUp = true;

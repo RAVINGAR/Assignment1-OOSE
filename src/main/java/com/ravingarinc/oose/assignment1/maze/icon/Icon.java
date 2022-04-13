@@ -8,11 +8,20 @@ public interface Icon {
     String[][] getSymbol();
 
     /**
-     * Called when a player attempts to move to this icon
-     * @param direction The direction in which the player is trying to move
+     * Called when a player attempts to move TO this icon
+     * @param player the player
+     * @param direction The direction opposite of where the player is moving
      * @return True if player can move to this icon
      */
-    boolean onMove(Player player, Direction direction);
+    boolean onMoveTo(Player player, Direction direction);
+
+    /**
+     * Called when a player attempts to move FROM this icon
+     * @param player the player
+     * @param direction the direction the player is moving.
+     * @return True if player can move from this icon.
+     */
+    boolean onMoveFrom(Player player, Direction direction);
 
     void setNext(Icon next);
 

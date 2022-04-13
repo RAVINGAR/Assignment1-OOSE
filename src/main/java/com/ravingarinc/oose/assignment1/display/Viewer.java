@@ -19,7 +19,7 @@ public class Viewer {
     private String[][] display;
     private String message;
 
-    public Viewer(Maze maze) {
+    public Viewer(Maze maze) throws ViewerFormatError {
         message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
         initialiseDisplay(maze);
     }
@@ -27,69 +27,77 @@ public class Viewer {
     /**
      * Transforms maze into a displayable format in terms of String values.
      */
-    public void initialiseDisplay(Maze maze) {
+    public void initialiseDisplay(Maze maze) throws ViewerFormatError {
         int rows = maze.getRows();
         int columns = maze.getColumns();
         display = new String[1 + rows * 2][1 + columns * 4];
 
-        List<List<Icon>> grid = maze.getGrid();
+        /*
+         0 1 2 3 4 5 6 7 8
+        0        |
+        1        |
+        2        +
+        4
+        5
+         */
+        Icon[][] grid = maze.getGrid();
 
-        int r = 0, c;
-        for(List<Icon> row : grid) {
-            c = 0;
-            for(Icon icon : row) {
-                String[][] symbol = icon.getSymbol();
-                if(symbol.length != 3 || symbol[0].length != 5) {
-                    MazeApplication.log(Level.SEVERE, "Got invalid symbol from icon at row " + r + ", column " + c);
-                }
-                else {
-                    for(int i = 0; i < 3; i++) {
-                        for(int j = 0; j < 5; j++) {
-                            display[r+i][c+j] = symbol[i][j];
+        try {
+            int r, c, displayRow = 0, displayColumn = 0;
+            for(r = 0; r < rows; r++) {
+                displayRow = r * 2;
+                for (c = 0; c < columns; c++) {
+                    displayColumn = c * 4;
+                    String[][] symbol = grid[r][c].getSymbol();
+                    for (int i = 0; i < 3; i++) {
+                        for (int j = 0; j < 5; j++) {
+                            display[displayRow + i][displayColumn + j] = symbol[i][j];
                         }
                     }
+
+                    //Top left corner is [r][c]
+                    //Top right corner is [r][c+4]
+                    //Bottom left corner is [r+2][c]
+                    //Bottom right corner is [r+2[c+4]
+                    /*
+                    The goal here now is to fill the corner blocks with their corresponding symbols
+                    However since for every icon only the icons to the LEFT and ABOVE will have been filled
+                    at every iteration. This means only the top left corner needs to be considered
+
+                    Since only the top left corner is considered, what will occur is that the very right wall (edge)
+                    will not have its corners updated. And neither will the very bottom wall.
+
+                    Whilst this method is more complicated to understand it reduces overall runtime complexity
+                    */
+                    //0,1,2,3,4
+                    //1
+                    //2
+
+
+
+
+                    display[displayRow][displayColumn] = Symbol.getApplicable(displayRow, displayColumn, display); //Sets the top left corner
                 }
-                //Top left corner is [r][c]
-                //Top right corner is [r][c+4]
-                //Bottom left corner is [r+2][c]
-                //Bottom right corner is [r+2[c+4]
-
-                /*
-                The goal here now is to fill the corner blocks with their corresponding symbols
-                However since for every icon only the icons to the LEFT and ABOVE will have been filled
-                at every iteration. This means only the top left corner needs to be considered
-
-                Since only the top left corner is considered, what will occur is that the very right wall (edge)
-                will not have its corners updated. And neither will the very bottom wall.
-
-                Whilst this method is more complicated to understand it reduces overall runtime complexity
-                */
-
-                if(c == 0 || c == columns-1) { //The most left wall is at row = ?, c = 0, The most right wall is at row = ?, c = columns - 1
-                    display[r+1][c] = Symbol.VERTICAL_WALL.toString();
-                }
-
-                display[r][c] = Symbol.getApplicable(r, c, display); //Sets the top left corner
-
-                c++;
+                //At this point, all corner icons above and left of the most right icon will be filled
+                //We are able to now fill the top right corner since this is the most right icon here.
+                display[displayRow][displayColumn + 4] = Symbol.getApplicable(displayRow, displayColumn + 4, display);
             }
-            if(r == 0 || r == rows-1) { //The most top wall is at row = 0, c = ?, The most bottom wall is at row = rows - 1, c = ?
-                display[r][c+1] = Symbol.HORIZONTAL_WALL.toString();
+            //At this point all icon corners except for the most bottom row will be filled.
+            //We could add an if statement in the above for loop to check if it's at the bottom row, however
+            //the below method is neater
+
+            //Iterates at the bottom row for every corner piece.
+            for(int h = 0; h < 1 + columns * 4; h += 4) {
+                display[rows * 2][h] = Symbol.getApplicable(rows * 2, h, display);
             }
-
-            //At this point, all corner icons above and left of the most right icon will be filled
-            //We are able to now fill the top right corner since this is the most right icon here.
-            display[r][c+4] = Symbol.getApplicable(r, c+4, display);
-            r++;
         }
-        //At this point all icon corners except for the most bottom row will be filled.
-        //We could add an if statement in the above for loop to check if it's at the bottom row, however
-        //the below method is neater
-
-        //Iterates at the bottom row for every corner piece.
-        for(int h = 0; h < 1 + columns * 4; h += 4) {
-            display[rows * 2][h] = Symbol.getApplicable(rows * 2, h, display);
+        catch(ArrayIndexOutOfBoundsException e) {
+            throw new ViewerFormatError("Accessed array element of display outside of bounds! At " + e);
         }
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public void update(Maze maze) {
@@ -102,7 +110,7 @@ public class Viewer {
             icon = maze.getNextIconToUpdate();
         }
 
-        display[player.row()+1][player.column()+2] = player.getSymbol();
+        display[player.row() * 2 + 1][player.column() * 4 +2] = player.getSymbol();
     }
 
     /** Will update a singular icon in the display maze at a specific location. This should be used to update keys and doors
@@ -118,16 +126,18 @@ public class Viewer {
 
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 5; j++) {
-                display[row+i][column+j] = symbol[i][j];
+                if(!((i == 0 && (j == 0 || j == 4)) || (i == 2 && (j == 0 || j == 4)))) {
+                    display[row * 2 + i][column * 4 + j] = symbol[i][j];
+                }
             }
         }
     }
 
     public void display() {
-        System.out.print(Colour.GREEN + "== The Untitled Maze Game ==\n");
-        for(String[] row : display) {
-            for(String i : row) {
-                System.out.print(i);
+        System.out.print("\033[2J" + Colour.GREEN + "== The Untitled Maze Game ==\033[m\n");
+        for(int r = 0; r < display.length; r++) {
+            for(int c = 0; c < display[0].length; c++) {
+                System.out.print(display[r][c]);
             }
             System.out.print("\n");
         }

@@ -16,14 +16,19 @@ public class Element implements Icon {
         String[][] symbol = new String[3][5];
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 5; j++) {
-                symbol[i][j] = " ";
+                symbol[i][j] = " \033[m";
             }
         }
         return symbol;
     }
 
     @Override
-    public boolean onMove(Player player, Direction direction) {
+    public boolean onMoveTo(Player player, Direction direction) {
+        return true;
+    }
+
+    @Override
+    public boolean onMoveFrom(Player player, Direction direction) {
         return true;
     }
 
