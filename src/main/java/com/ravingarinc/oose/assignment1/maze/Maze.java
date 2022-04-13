@@ -16,26 +16,6 @@ public class Maze {
     private int rows, columns;
     private Player player = null;
     private final LinkedList<Icon> iconsToUpdate;
-    /*
-    WH 2 3, Horizontal _ above 2 3, below 2,2
-    Therefore this means trace
-
-    One Icon represents a 5x3
-    However it shares row 0 and 2, and column 0 and 4 with other icons!
-
-    Displayable size = 1 + rows * 2
-                     = 1 + columns * 4
-    01234
-    ┌───┐
-    | o |
-    └───┘
-    When parsing maze after initial walls, essentially need to check symbols surrounding the o object
-    o───o───o
-    |       |
-    o───o   o
-            |
-    o───o───o
-     */
 
     public Maze(String filename) throws MazeFormatException {
         //We use an object for the reader so that only ONE BufferedReader needs to created to read the entire file.
