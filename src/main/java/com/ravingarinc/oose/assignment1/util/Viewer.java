@@ -14,14 +14,14 @@ public class Viewer {
     private String[][] display;
     private String message;
 
-    public Viewer(Maze maze) throws ViewerFormatError {
+    public Viewer(Maze maze) throws MazeErrorException {
         init(maze);
     }
 
     /**
      * Transforms maze into a displayable format in terms of String values.
      */
-    public void init(Maze maze) throws ViewerFormatError {
+    public final void init(Maze maze) throws MazeErrorException {
         int rows = maze.getRows();
         int columns = maze.getColumns();
         display = new String[1 + rows * 2][1 + columns * 4];
@@ -72,7 +72,7 @@ public class Viewer {
             }
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            throw new ViewerFormatError("Accessed array element of display outside of bounds! At " + e, e);
+            throw new MazeErrorException("Accessed array element of display outside of bounds! At " + e, e);
         }
     }
 

@@ -39,7 +39,7 @@ public class Player {
     public void removeKey(Colour colour) {
         Integer i = keys.get(colour);
         if(i == 0) {
-            MazeApplication.log(Level.WARNING, "Cannot remove key of player when player has 0 keys!");
+            MazeApplication.logMessage(Level.WARNING, "Cannot remove key of player when player has 0 keys!");
         }
         else {
             keys.put(colour, i-1);

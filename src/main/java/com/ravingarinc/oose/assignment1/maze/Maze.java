@@ -2,8 +2,9 @@ package com.ravingarinc.oose.assignment1.maze;
 
 import com.ravingarinc.oose.assignment1.MazeApplication;
 import com.ravingarinc.oose.assignment1.character.Player;
-import com.ravingarinc.oose.assignment1.util.MazeFormatException;
-import com.ravingarinc.oose.assignment1.util.MazeReader;
+import com.ravingarinc.oose.assignment1.util.IllegalMazeException;
+import com.ravingarinc.oose.assignment1.util.MazeErrorException;
+import com.ravingarinc.oose.assignment1.util.io.MazeReader;
 import com.ravingarinc.oose.assignment1.maze.icon.*;
 import com.ravingarinc.oose.assignment1.maze.icon.decorations.*;
 import org.jetbrains.annotations.Nullable;
@@ -15,9 +16,9 @@ public class Maze {
     private final Icon[][] grid;
     private int rows, columns;
     private Player player = null;
-    private final LinkedList<Icon> iconsToUpdate;
+    private final List<Icon> iconsToUpdate;
 
-    public Maze(String filename) throws MazeFormatException {
+    public Maze(String filename) throws MazeErrorException, IllegalMazeException {
         //We use an object for the reader so that only ONE BufferedReader needs to created to read the entire file.
         MazeReader reader = new MazeReader(filename);
 
@@ -36,42 +37,18 @@ public class Maze {
         iconsToUpdate = new LinkedList<>();
     }
 
-    private void parseInitialData(String firstLine) throws MazeFormatException {
+    private void parseInitialData(String firstLine) throws MazeErrorException {
         try {
             String[] split = firstLine.split(" ");
             rows = Integer.parseInt(split[0]);
             columns = Integer.parseInt(split[1]);
         }
         catch(NumberFormatException e) {
-            throw new MazeFormatException("Initial line used incorrect syntax for rows and columns! First line read; \n" + firstLine, e);
+            throw new MazeErrorException("Initial line used incorrect syntax for rows and columns! First line read; \n" + firstLine, e);
         }
     }
 
-    private void parseMazeData(Map<String, LinkedList<String>> data) throws MazeFormatException {
-        /*
-        new Key(new Message(new Door(new Wall(new Element))))
-
-        Which method is called first? Of these
-
-
-        */
-
-        //The order of it is new Label(new Caption(new ImageData);
-        //Since each description is this + next
-        //Order goes Label + Caption + Image
-        //For cat example
-        /*
-        Order of info Caption: GPS: Rating
-
-        How it prints is Rating: GPS: Caption
-
-        This means it went new Label(new Label(new Caption(new ImageData
-
-        Meaning that the FIRST label class is called first
-        As such. In this case,
-        Each of the decorations MUST check if next can occur BEFORE they execute their own functions :)
-        */
-
+    private void parseMazeData(Map<String, LinkedList<String>> data) throws IllegalMazeException {
         //"S", "E", "K", "WH", "WV", "DH", "DV"
         //Fixme there is alot of repeating code here. How can it be condensed?
         for(Map.Entry<String, LinkedList<String>> key : data.entrySet()) {
@@ -90,15 +67,15 @@ public class Maze {
                             }
                         }
                         catch(NumberFormatException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid start location for player, looking for another..");
+                            MazeApplication.logMessage(Level.WARNING, "Invalid start location for player, looking for another..");
                         }
                         catch(ArrayIndexOutOfBoundsException e) {
-                            MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
+                            MazeApplication.logMessage(Level.WARNING, "Invalid amount of arguments! Skipping..");
                         }
                     }
 
                     if(player == null) {
-                        throw new MazeFormatException("Invalid maze file! No VALID start locations were specified!", Maze.class.getName(), 121);
+                        throw new IllegalMazeException("Invalid maze file! No VALID start locations were specified!", Maze.class.getName(), 121);
                     }
                 }
                 case "E" -> list.forEach(element -> {
@@ -109,10 +86,10 @@ public class Maze {
                         this.putIcon(r, c, new End(r, c));
                     }
                     catch(NumberFormatException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
                     }
                     catch(ArrayIndexOutOfBoundsException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid amount of arguments! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid amount of arguments! Skipping..");
                     }
                 });
                 case "K" -> list.forEach(element -> {
@@ -123,10 +100,10 @@ public class Maze {
                         this.putIcon(r, c, new Key(Colour.matchColour(Integer.parseInt(split[2])), r, c));
                     }
                     catch(NumberFormatException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
                     }
                     catch(ArrayIndexOutOfBoundsException e) {
-                        MazeApplication.log(Level.WARNING, "Key had no specified colour! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Key had no specified colour! Skipping..");
                     }
                 });
                 case "M" -> list.forEach(element -> {
@@ -137,10 +114,10 @@ public class Maze {
                         this.putIcon(r, c, new Message(split[2], r, c));
                     }
                     catch(NumberFormatException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
                     }
                     catch(ArrayIndexOutOfBoundsException e) {
-                        MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Message had no message! Skipping..");
                     }
                 });
                 case "WH", "WV" -> list.forEach(element -> {
@@ -159,10 +136,10 @@ public class Maze {
 
                     }
                     catch(NumberFormatException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
                     }
                     catch(ArrayIndexOutOfBoundsException e) {
-                        MazeApplication.log(Level.WARNING, "Message had no message! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Message had no message! Skipping..");
                     }
                 });
                 case "DH", "DV" -> list.forEach(element -> {
@@ -184,13 +161,13 @@ public class Maze {
 
                     }
                     catch(NumberFormatException e) {
-                        MazeApplication.log(Level.WARNING, "Invalid location for element! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
                     }
                     catch(ArrayIndexOutOfBoundsException e) {
-                        MazeApplication.log(Level.WARNING, "Door had no colour! Skipping..");
+                        MazeApplication.logMessage(Level.WARNING, "Door had no colour! Skipping..");
                     }
                 });
-                default -> MazeApplication.log(Level.SEVERE, "Found maze data element that should NOT be present. Skipping..");
+                default -> MazeApplication.logMessage(Level.SEVERE, "Found maze data element that should NOT be present. Skipping..");
             }
         }
 
@@ -258,14 +235,14 @@ public class Maze {
             throw new IllegalStateException("Player's current icon was null but it shouldn't be!?");
         }
         if(prev.onMoveFrom(player, direction)) {
-            iconsToUpdate.addLast(prev);
+            iconsToUpdate.add(prev);
             Icon next = getIcon(newPos.row(), newPos.column());
             //Next should not be null since if prev was a boundary, there SHOULD be a wall there.
             if(next == null) {
                 throw new IllegalStateException("Player's next icon was null but it shouldn't be!?");
             }
             if(next.onMoveTo(player, direction.getOpposing())) {
-                iconsToUpdate.addLast(next);
+                iconsToUpdate.add(next);
                 //Since there will only be ONE door between two squares. Must check both that nothing is blocking on both
                 //sides
                 player.move(direction);
@@ -275,7 +252,7 @@ public class Maze {
 
     @Nullable
     public Icon getNextIconToUpdate() {
-        return iconsToUpdate.isEmpty() ? null : iconsToUpdate.removeFirst();
+        return iconsToUpdate.isEmpty() ? null : iconsToUpdate.remove(0);
     }
 
     /**

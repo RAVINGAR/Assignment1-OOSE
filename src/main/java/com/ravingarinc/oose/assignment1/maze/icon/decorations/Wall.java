@@ -20,7 +20,7 @@ public class Wall extends Additive {
         //considered since each 'Wall' does not actually know about any other walls
         //o is represented as a corner symbol which will be considered later for appropriate corner symbols
         switch(blocking) {
-            case UP,DOWN -> {
+            case UP, DOWN -> {
                 for(int i = 1; i < 4; i++) {
                     symbol[blocking == Direction.UP ? 0 : 2][i] = Symbol.HORIZONTAL_WALL.toString();
                 }

@@ -104,7 +104,7 @@ public enum Symbol {
 
         }
         catch(ArrayIndexOutOfBoundsException e) {
-            MazeApplication.log(Level.WARNING, "Attempted to get applicable symbol with index out of bounds at r: " + r + ", and c: " + c + "!");
+            MazeApplication.logMessage(Level.WARNING, () -> "Attempted to get applicable symbol with index out of bounds at r: " + r + ", and c: " + c + "!");
         }
         return applicable;
     }

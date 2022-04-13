@@ -21,22 +21,22 @@ public class FakeDoor extends Door {
 
     @Override
     protected boolean checkDoor(Player player, Direction direction) {
-        if(!this.isOpen()) {
+        if(this.isOpen()) {
+            return true;
+        }
+        else {
             if(direction == blocking) {
-                if(!player.hasKey(colour)) {
-                    player.sendMessage("A magical " + colour.getReadableName() + " door blocks your way!");
-                    return false;
+                if(player.hasKey(colour)) {
+                    return true;
                 }
                 else {
-                    return true;
+                    player.sendMessage("A magical " + colour.getReadableName() + " door blocks your way!");
+                    return false;
                 }
             }
             else {
                 return true;
             }
-        }
-        else {
-            return true;
         }
     }
 }

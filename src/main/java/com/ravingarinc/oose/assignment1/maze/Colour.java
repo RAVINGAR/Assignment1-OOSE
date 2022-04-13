@@ -38,7 +38,7 @@ public enum Colour {
                 return c;
             }
         }
-        MazeApplication.log(Level.WARNING, "Could not match colour for key, using default of white!");
+        MazeApplication.logMessage(Level.WARNING, "Could not match colour for key, using default of white!");
         return Colour.WHITE;
     }
 }

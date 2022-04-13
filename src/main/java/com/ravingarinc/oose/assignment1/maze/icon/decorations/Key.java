@@ -29,8 +29,7 @@ public class Key extends Additive {
         return symbol;
     }
 
-    //For keys this should be the LAST item in the chain to be called.
-    //Since it must check if players can go through doors or not
+    @Override
     public boolean onMoveTo(Player player, Direction direction) {
         if(next.onMoveTo(player, direction)) {
             if(!pickedUp) {

@@ -52,7 +52,10 @@ public class Door extends Additive {
     }
 
     protected boolean checkDoor(Player player, Direction direction) {
-        if(!isOpen) {
+        if(isOpen) {
+            return true;
+        }
+        else {
             if(direction == blocking) {
                 if(player.hasKey(colour)) {
                     player.removeKey(colour);
@@ -68,9 +71,6 @@ public class Door extends Additive {
             else {
                 return true;
             }
-        }
-        else {
-            return true;
         }
     }
 

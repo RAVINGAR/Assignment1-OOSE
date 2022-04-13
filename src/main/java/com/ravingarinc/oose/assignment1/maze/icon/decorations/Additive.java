@@ -13,6 +13,7 @@ public abstract class Additive implements Icon {
         next = new Element(row, column);
     }
 
+    @Override
     public Position getPos() {
         return next.getPos();
     }
