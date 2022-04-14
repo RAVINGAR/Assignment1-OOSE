@@ -4,6 +4,8 @@ import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Position;
 import com.ravingarinc.oose.assignment1.maze.Symbol;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -79,39 +81,43 @@ public class Player {
         }
         //Slightly overly complicated code to get good formatting..
         StringBuilder builder = new StringBuilder();
-        String lastMessage = null;
-        List<String> leftoverMessages = new LinkedList<>(messages);
+        List<String> keyMessages = new LinkedList<>();
 
-        StringBuilder keyBuilder = new StringBuilder();
-
-        for(String message : messages) {
-            //The general purpose of this is to format keys a bit nicer in case there are multiple.
-            if(message.contains("key") && (lastMessage != null && lastMessage.contains("key"))) {
-                keyBuilder.append(lastMessage.substring(0, lastMessage.length()-1));
-                keyBuilder.append(" AND ");
-                int colourIdx = message.indexOf("\033[");
-                if(message.substring(colourIdx+3).equals(lastMessage.substring(colourIdx+3))) {
-                    keyBuilder.append("another ");
-                }
-                else {
-                    keyBuilder.append("a ");
-                }
-                keyBuilder.append(message.substring(colourIdx));
-                keyBuilder.append("\n");
-                leftoverMessages.remove(lastMessage);
-                leftoverMessages.remove(message);
-                lastMessage = null;
-            }
-            else {
-                lastMessage = message;
+        Iterator<String> iterator = new LinkedList<>(messages).iterator();
+        while(iterator.hasNext()) {
+            String m = iterator.next();
+            if(m.contains("key") && m.contains("\033[")) {
+                keyMessages.add(m);
+                messages.remove(m);
             }
         }
-
-        leftoverMessages.forEach(message -> {
-            builder.append(message).append("\n");
+        messages.forEach(m -> {
+            builder.append(m).append("\n");
         });
 
-        builder.append(keyBuilder);
+        iterator = keyMessages.iterator();
+
+        if(!keyMessages.isEmpty()) {
+            builder.append("You have found a magical ");
+            String prev = null;
+            while(iterator.hasNext()) {
+                String key = iterator.next();
+                if(key.equals(prev)) {
+                    builder.append("another ");
+                }
+                else if(!key.equals(keyMessages.get(0))) {
+                    builder.append("a ");
+                }
+                builder.append(key);
+                if(iterator.hasNext()) {
+                    builder.append(" AND ");
+                    prev = key;
+                }
+                else {
+                    builder.append("!\n");
+                }
+            }
+        }
 
         messages = new LinkedList<>(); //Reset messages for next movement
 

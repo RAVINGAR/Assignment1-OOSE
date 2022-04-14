@@ -34,7 +34,7 @@ public class Key extends Additive {
         if(next.onMoveTo(player, direction)) {
             if(!pickedUp) {
                 player.addKey(colour);
-                player.sendMessage("You found a magical " + colour.getReadableName() + " key");
+                player.sendMessage(colour.getReadableName() + " key");
                 pickedUp = true;
             }
             return true;

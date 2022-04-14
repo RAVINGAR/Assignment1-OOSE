@@ -50,7 +50,6 @@ public class MazeReader {
         Map<String, LinkedList<String>> data = initialiseMap();
 
         try {
-            reader.readLine();
             String line = reader.readLine();
 
             while(line != null) {
