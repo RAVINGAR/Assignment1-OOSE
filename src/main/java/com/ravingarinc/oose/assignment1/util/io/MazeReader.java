@@ -19,11 +19,11 @@ public class MazeReader {
 
     //private Map<String, Class<? extends Icon>> types;
 
-    public MazeReader(@NotNull String filename) throws MazeErrorException, IllegalMazeException {
+    public MazeReader(@NotNull String filename) throws MazeErrorException {
         try {
             reader = new BufferedReader(new FileReader(filename));
         } catch (FileNotFoundException e) {
-            throw new MazeErrorException("Could not find file with filename " + filename + "!", e);
+            throw new MazeErrorException("Could not find file with filename '" + filename + "'!", e);
         }
     }
 

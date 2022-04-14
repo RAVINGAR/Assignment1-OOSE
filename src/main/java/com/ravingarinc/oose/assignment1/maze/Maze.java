@@ -219,6 +219,20 @@ public class Maze {
         return 0 <= row && row < rows && 0 <= column && column < columns ? this.grid[row][column] : null;
     }
 
+    public void handleInitialPlayerPosition() throws IllegalMazeException {
+        Icon current = getIcon(player.row(), player.column());
+        if(current == null) {
+            throw new IllegalMazeException("Player's current icon was null but it shouldn't be!?", Maze.class.getName(), 225);
+        }
+
+        //Since moving to an icon is based on moving to/from it will ALWAYS check if there is a wall or door
+        //Since we want the player to start on this position, the onMoveTo must be called, however it has to ignore
+        //any walls or doors. The solution was then to add a null check on the direction. If direction is null,
+        //then no wall/door checks should have to be made
+        current.onMoveTo(player, null);
+        iconsToUpdate.add(current);
+    }
+
     public void handlePlayerMove(Direction direction) throws IllegalMazeException {
         Position newPos = new Position(player.row(), player.column());
         newPos.move(direction);

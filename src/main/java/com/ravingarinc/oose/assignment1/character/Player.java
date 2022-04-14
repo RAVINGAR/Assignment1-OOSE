@@ -67,5 +67,10 @@ public class Player {
 
     public String getSymbol() { return symbol; }
 
-    public String getMessage() { return message; }
+    public String getMessage() {
+        String str = message;
+        message = "Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!";
+        //Provides a default message
+        return str;
+    }
 }

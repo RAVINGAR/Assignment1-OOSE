@@ -52,6 +52,10 @@ public class Door extends Additive {
     }
 
     protected boolean checkDoor(Player player, Direction direction) {
+        if(direction == null) {
+            return true;
+        }
+
         if(isOpen) {
             return true;
         }

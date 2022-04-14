@@ -1,7 +1,5 @@
 package com.ravingarinc.oose.assignment1.util;
 
-import java.util.Arrays;
-
 /**
  * Used to wrap generally user error exceptions which are caught by the main block.
  * They contain the original exception and help in providing easy debugging via printing the stack trace.
@@ -19,14 +17,17 @@ public class MazeErrorException extends Exception {
 
     @Override
     public String getMessage() {
-        return super.getMessage() + " with Exception; \n    " + cause.getMessage() + " \n    Stack Trace; " + formatStackTrace();
+        return super.getMessage() + " \n    Exception; " + cause.getMessage() + " \n    Stack Trace; " + formatStackTrace();
     }
 
     public String formatStackTrace() {
+        StringBuilder format = new StringBuilder();
         if(cause != null) {
-            return Arrays.toString(cause.getStackTrace());
+            for(StackTraceElement trace : cause.getStackTrace()) {
+                format.append(trace.toString()).append("\n");
+            }
         }
-        return "";
+        return format.toString();
     }
 
 }

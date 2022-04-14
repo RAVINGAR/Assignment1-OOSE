@@ -1,5 +1,7 @@
 package com.ravingarinc.oose.assignment1.maze;
 
+import java.util.InputMismatchException;
+
 public enum Direction {
     UP,
     DOWN,
@@ -25,7 +27,7 @@ public enum Direction {
             case 's', 'S' -> Direction.DOWN;
             case 'a', 'A' -> Direction.LEFT;
             case 'd', 'D' -> Direction.RIGHT;
-            default -> null;
+            default -> throw new InputMismatchException();
         };
     }
 }

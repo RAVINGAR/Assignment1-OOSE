@@ -53,6 +53,9 @@ public class Wall extends Additive {
     }
 
     private boolean checkWall(Player player, Direction direction) {
+        if(direction == null) {
+            return true;
+        }
         if(direction == blocking) {
             player.sendMessage("You cannot move that way!");
             return false;

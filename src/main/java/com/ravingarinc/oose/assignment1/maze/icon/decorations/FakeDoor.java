@@ -42,6 +42,9 @@ public class FakeDoor extends Door {
 
     @Override
     protected boolean checkDoor(Player player, Direction direction) {
+        if(direction == null) {
+            return true;
+        }
         if(this.isOpen()) {
             return true;
         }

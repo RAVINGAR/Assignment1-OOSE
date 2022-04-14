@@ -67,7 +67,7 @@
     <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
     
     <!-- Resources -->
-    <rule ref="category/java/errorprone.xml/CloseResource" />
+    <!--<rule ref="category/java/errorprone.xml/CloseResource" /> Would give this error even if objects are closed-->
     <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
     
     <!-- Objects -->

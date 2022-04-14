@@ -1,6 +1,5 @@
 package com.ravingarinc.oose.assignment1;
 
-import com.ravingarinc.oose.assignment1.maze.Symbol;
 import com.ravingarinc.oose.assignment1.util.IllegalMazeException;
 import com.ravingarinc.oose.assignment1.util.Viewer;
 import com.ravingarinc.oose.assignment1.util.MazeErrorException;
@@ -9,7 +8,10 @@ import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -19,86 +21,83 @@ import java.util.logging.Logger;
 
 public class MazeApplication {
     private static final Logger LOGGER = Logger.getLogger(MazeApplication.class.getName());
+    private static Scanner scanner;
 
     public static void main(String[] args) {
-
+        scanner = new Scanner(System.in);
         System.out.println("Welcome to the Untitled Maze Game!");
-        String filename = getFilename();
+        String filename;
+        Maze maze = null;
+        Viewer viewer = null;
+        try {
+            filename = getFilename();
+            maze = new Maze(filename);
+            viewer = new Viewer(maze);
+        }
+        catch(MazeErrorException | IllegalMazeException e) {
+            logMessage(Level.SEVERE, e.getMessage());
+        }
 
-        final Maze maze = setupMaze(filename);
-        final Viewer viewer = setupViewer(maze);
-
-        if(maze == null || viewer == null) {
+        if(maze == null || viewer == null) { //If getting filename, creating maze or creating viewer does not load properly. Will exit program
             System.out.println("Encountered errors on load. Program will now exit.");
         }
         else {
             run(maze, viewer);
         }
+        scanner.close();
     }
 
     @NotNull
-    private static String getFilename() {
-        Scanner sc = new Scanner(System.in);
+    private static String getFilename() throws MazeErrorException {
         String filename = null;
         while(filename == null) {
             System.out.print("Please enter a valid filename: ");
             try {
-                filename = sc.next();
+                filename = scanner.nextLine();
                 if(filename.isEmpty()) {
                     throw new NoSuchElementException("Filename was empty!");
                 }
+
+                FileReader file = new FileReader(filename); //This acts as a check to whether file exists.
+                file.close();
             }
             catch(NoSuchElementException e) {
                 System.out.println("Invalid input! Try again!");
-                logMessage(Level.INFO, e.getMessage());
-                sc.next();
+                scanner.next();
+            }
+            catch(FileNotFoundException e) {
+                System.out.println("File was not found! Please try again!");
+                filename = null;
+            }
+            catch (IOException e) {
+                throw new MazeErrorException("Could not close file!", e);
             }
         }
-
-        sc.close();
         return filename;
     }
 
-    private static Maze setupMaze(String filename) {
-        Maze maze = null;
+    private static void run(Maze maze, Viewer viewer) {
         try {
-            maze = new Maze(filename);
+            maze.handleInitialPlayerPosition();
         }
-        catch(MazeErrorException | IllegalMazeException e) {
+        catch(IllegalMazeException e) {
             logMessage(Level.SEVERE, e.getMessage());
         }
-        return maze;
-    }
-
-    private static Viewer setupViewer(Maze maze) {
-        Viewer viewer = null;
-        if(maze != null) {
-            try {
-                viewer = new Viewer(maze);
-            }
-            catch(MazeErrorException e) {
-                System.out.print(e.getMessage());
-                logMessage(Level.SEVERE, e.getMessage());
-            }
-        }
-        return viewer;
-    }
-
-    private static void run(Maze maze, Viewer viewer) {
         viewer.display(maze);
         boolean running = true;
         while(running) {
             try {
-                viewer.setMessage("Use W, S, A and D to move up, down, left or right! Try and reach the end '" + Symbol.END + "' symbol!");
-
-                Direction input = Direction.getDirectionInput((char)System.in.read());
+                String str = scanner.next();
+                if(str == null || str.length() != 1) {
+                    throw new InputMismatchException();
+                }
+                Direction input = Direction.getDirectionInput(str.charAt(0));
                 if(input != null) {
                     maze.handlePlayerMove(input);
                 }
             }
-            catch(IOException e) {
-                viewer.setMessage(Colour.RED + "Something went wrong getting input!" + Colour.BLANK);
-                logMessage(Level.SEVERE, () -> "Encountered issue during runtime!" + e.getMessage());
+            catch(InputMismatchException e) {
+                viewer.setMessage(Colour.RED + "Incorrect input, try again!" + Colour.BLANK);
             }
             catch(IllegalMazeException e) {
                 viewer.setMessage(Colour.RED + "Something went wrong moving player! " + Colour.BLANK);
