@@ -27,7 +27,14 @@ public class Player {
     }
 
     public void addKey(Colour colour) {
-        keys.add(colour);
+        if(!keys.contains(colour)) {
+            keys.add(colour);
+        }
+        /*
+        Only add the key if the player doesn't already have it.
+        We do this so that when displaying the hotbar, it will only show a maximum
+        of 6 keys and won't overflow the terminal line.
+         */
     }
 
     public void finishGame() {
@@ -62,7 +69,6 @@ public class Player {
                 builder.append(Symbol.KEY);
                 builder.append(" ");
             });
-            builder.append("\n");
             return builder.toString();
         }
     }
@@ -76,19 +82,22 @@ public class Player {
         String lastMessage = null;
         List<String> leftoverMessages = new LinkedList<>(messages);
 
+        StringBuilder keyBuilder = new StringBuilder();
+
         for(String message : messages) {
+            //The general purpose of this is to format keys a bit nicer in case there are multiple.
             if(message.contains("key") && (lastMessage != null && lastMessage.contains("key"))) {
-                builder.append(lastMessage.substring(0, lastMessage.length()-1));
-                builder.append(" AND ");
+                keyBuilder.append(lastMessage.substring(0, lastMessage.length()-1));
+                keyBuilder.append(" AND ");
                 int colourIdx = message.indexOf("\033[");
                 if(message.substring(colourIdx+3).equals(lastMessage.substring(colourIdx+3))) {
-                    builder.append("another ");
+                    keyBuilder.append("another ");
                 }
                 else {
-                    builder.append("a ");
+                    keyBuilder.append("a ");
                 }
-                builder.append(message.substring(colourIdx));
-                builder.append("\n");
+                keyBuilder.append(message.substring(colourIdx));
+                keyBuilder.append("\n");
                 leftoverMessages.remove(lastMessage);
                 leftoverMessages.remove(message);
                 lastMessage = null;
@@ -101,7 +110,10 @@ public class Player {
         leftoverMessages.forEach(message -> {
             builder.append(message).append("\n");
         });
-        messages = new LinkedList<>();
+
+        builder.append(keyBuilder);
+
+        messages = new LinkedList<>(); //Reset messages for next movement
 
         return builder.toString();
     }

@@ -24,7 +24,7 @@ public class MazeApplication {
 
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
-        System.out.println("Welcome to the Untitled Maze Game!");
+        System.out.println("\033[H\033[2JWelcome to the Untitled Maze Game!");
         String filename;
         Maze maze = null;
         Viewer viewer = null;
@@ -83,6 +83,7 @@ public class MazeApplication {
         boolean running = true;
         while(running) {
             try {
+                System.out.print("Input < ");
                 String str = scanner.next();
                 if(str == null || str.length() != 1) {
                     throw new InputMismatchException();

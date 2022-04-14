@@ -27,7 +27,6 @@ K 3 1 6
 M 3 1 Well done.
 K 1 4 1
 K 1 4 1
-K 1 4 2
 M 1 4 First key!
 M 1 4 Now find the next.
 K 2 1 2
