@@ -1,5 +1,6 @@
 package com.ravingarinc.oose.assignment1;
 
+import com.ravingarinc.oose.assignment1.maze.Symbol;
 import com.ravingarinc.oose.assignment1.util.IllegalMazeException;
 import com.ravingarinc.oose.assignment1.util.Viewer;
 import com.ravingarinc.oose.assignment1.util.MazeErrorException;
@@ -73,6 +74,7 @@ public class MazeApplication {
     private static void run(Maze maze, Viewer viewer) {
         try {
             maze.handleInitialPlayerPosition();
+            maze.getPlayer().sendMessage("Use W, S, A and D to move. Try and reach the end at the '" + Symbol.END + "' if you can!");
         }
         catch(IllegalMazeException e) {
             logMessage(Level.SEVERE, e.getMessage());

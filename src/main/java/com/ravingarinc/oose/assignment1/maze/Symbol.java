@@ -74,7 +74,7 @@ public enum Symbol {
     public static String getApplicable(int r, int c, String[][] symbols) {
         char up, down, left, right; //Represents the symbols above, below, left and right of the corner
 
-        String applicable = CROSSWAY.toString();
+        String applicable = " \033[m";
         try {
             /*
             There are two ways now to find the correct symbol.

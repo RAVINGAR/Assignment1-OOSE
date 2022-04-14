@@ -17,7 +17,7 @@ public class Maze {
     private Icon[][] grid;
     private int rows, columns;
     private Player player = null;
-    private List<Icon> iconsToUpdate;
+    private final List<Icon> iconsToUpdate;
 
     public Maze(@NotNull String filename) throws MazeErrorException, IllegalMazeException {
         //We use an object for the reader so that only ONE BufferedReader needs to created to read the entire file.
@@ -281,9 +281,8 @@ public class Maze {
      * @param column x axis
      * @param icon icon to append
      */
-    public void putIcon(int row, int column, Icon icon) {
+    private void putIcon(int row, int column, Icon icon) {
         if(0 <= row && row < rows && 0 <= column && column < columns) { //Only will occur if in bounds.
-
             Icon existing = grid[row][column];
             if(existing != null) {
                 icon.setNext(existing);

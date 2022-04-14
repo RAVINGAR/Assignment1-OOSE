@@ -52,7 +52,7 @@ public class Player {
 
     public String getMessage() {
         if(messages.isEmpty()) {
-            return "Use W, S, A and D to move. Try and reach the end at the '" + Symbol.END + "' if you can!";
+            return "";
         }
         //Slightly overly complicated code to get good formatting..
         StringBuilder builder = new StringBuilder();

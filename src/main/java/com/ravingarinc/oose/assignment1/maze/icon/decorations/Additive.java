@@ -6,8 +6,12 @@ import com.ravingarinc.oose.assignment1.maze.Position;
 import com.ravingarinc.oose.assignment1.maze.icon.Element;
 import com.ravingarinc.oose.assignment1.maze.icon.Icon;
 
+/**
+ * Purpose of this class is to provide the base method implementations for the decorations. As not all decorations
+ * need to override the below methods, so overall this just helps reduce repetitive code.
+ */
 public abstract class Additive implements Icon {
-    protected Icon next; //Due to the way we load maze objects, this needs to be changed AFTER initialisation.
+    protected Icon next;
 
     public Additive(int row, int column) {
         next = new Element(row, column);

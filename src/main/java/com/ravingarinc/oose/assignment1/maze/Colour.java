@@ -32,9 +32,9 @@ public enum Colour {
     }
 
     @NotNull
-    public static Colour matchColour(int i) {
+    public static Colour matchColour(int code) {
         for(Colour c : Colour.values()) {
-            if(c.ordinal() + 1 == i) {
+            if(c.ordinal() + 1 == code) {
                 return c;
             }
         }

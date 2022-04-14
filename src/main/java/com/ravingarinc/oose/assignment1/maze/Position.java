@@ -16,13 +16,6 @@ public class Position {
         return column;
     }
 
-    public void addRow(int r) {
-        row += r;
-    }
-    public void addColumn(int c) {
-        column += c;
-    }
-
     public void move(Direction direction) {
         switch(direction) {
             case UP -> row--;
