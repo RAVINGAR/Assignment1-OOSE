@@ -50,6 +50,23 @@ public class Player {
 
     public String getSymbol() { return symbol; }
 
+    public String getHotbar() {
+        if(keys.isEmpty()) {
+            return "";
+        }
+        else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Backpack | ");
+            keys.forEach(k -> {
+                builder.append(k.toString());
+                builder.append(Symbol.KEY);
+                builder.append(" ");
+            });
+            builder.append("\n");
+            return builder.toString();
+        }
+    }
+
     public String getMessage() {
         if(messages.isEmpty()) {
             return "";

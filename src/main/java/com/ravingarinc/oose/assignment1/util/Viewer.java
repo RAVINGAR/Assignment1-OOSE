@@ -118,6 +118,7 @@ public class Viewer {
         update(maze);
 
         System.out.print(Colour.GREEN + "== The Untitled Maze Game ==" + Colour.BLANK + "\n");
+        System.out.print(maze.getPlayer().getHotbar());
         for(int r = 0; r < maze.getRows() * 2 + 1; r++) {
             for(int c = 0; c < maze.getColumns() * 4 + 1; c++) {
                 System.out.print(display[r][c]);

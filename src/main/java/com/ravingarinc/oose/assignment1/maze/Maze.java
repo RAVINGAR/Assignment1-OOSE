@@ -51,7 +51,16 @@ public class Maze {
 
     private void parseMazeData(Map<String, LinkedList<String>> data) throws IllegalMazeException {
         //"S", "E", "K", "WH", "WV", "DH", "DV"
-        //Fixme there is alot of repeating code here. How can it be condensed?
+        /*
+        I am aware of the amount of repeating code here. This method is only called once to initially load data from the
+        maze file.
+        My only other alternative to reduce the amount of data here was to create a container object that would
+        store the Class<? extends Additive> types stored in a map corresponding to the icon keys (S, E, K etc)
+        Then use reflection to call a constructor and from that object you would get an object which could then be put
+        on the map.
+        However I'm unsure if I'm ALLOWED to use reflection to do such a thing, additionally, the below code works and
+        I don't have much time left.
+         */
         for(Map.Entry<String, LinkedList<String>> key : data.entrySet()) {
             LinkedList<String> list = key.getValue();
             String parsedKey = key.getKey();
