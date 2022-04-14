@@ -7,6 +7,7 @@ import com.ravingarinc.oose.assignment1.util.MazeErrorException;
 import com.ravingarinc.oose.assignment1.util.io.MazeReader;
 import com.ravingarinc.oose.assignment1.maze.icon.*;
 import com.ravingarinc.oose.assignment1.maze.icon.decorations.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -18,7 +19,7 @@ public class Maze {
     private Player player = null;
     private List<Icon> iconsToUpdate;
 
-    public Maze(String filename) throws MazeErrorException, IllegalMazeException {
+    public Maze(@NotNull String filename) throws MazeErrorException, IllegalMazeException {
         //We use an object for the reader so that only ONE BufferedReader needs to created to read the entire file.
         MazeReader reader = new MazeReader(filename);
 

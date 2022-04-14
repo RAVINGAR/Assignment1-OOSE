@@ -7,8 +7,11 @@ import com.ravingarinc.oose.assignment1.util.MazeErrorException;
 import com.ravingarinc.oose.assignment1.maze.Colour;
 import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +21,11 @@ public class MazeApplication {
     private static final Logger LOGGER = Logger.getLogger(MazeApplication.class.getName());
 
     public static void main(String[] args) {
-        final Maze maze = setupMaze();
+
+        System.out.println("Welcome to the Untitled Maze Game!");
+        String filename = getFilename();
+
+        final Maze maze = setupMaze(filename);
         final Viewer viewer = setupViewer(maze);
 
         if(maze == null || viewer == null) {
@@ -29,10 +36,33 @@ public class MazeApplication {
         }
     }
 
-    private static Maze setupMaze() {
+    @NotNull
+    private static String getFilename() {
+        Scanner sc = new Scanner(System.in);
+        String filename = null;
+        while(filename == null) {
+            System.out.print("Please enter a valid filename: ");
+            try {
+                filename = sc.next();
+                if(filename.isEmpty()) {
+                    throw new NoSuchElementException("Filename was empty!");
+                }
+            }
+            catch(NoSuchElementException e) {
+                System.out.println("Invalid input! Try again!");
+                logMessage(Level.INFO, e.getMessage());
+                sc.next();
+            }
+        }
+
+        sc.close();
+        return filename;
+    }
+
+    private static Maze setupMaze(String filename) {
         Maze maze = null;
         try {
-            maze = new Maze("maze.txt");
+            maze = new Maze(filename);
         }
         catch(MazeErrorException | IllegalMazeException e) {
             logMessage(Level.SEVERE, e.getMessage());

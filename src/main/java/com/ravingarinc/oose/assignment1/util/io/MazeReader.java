@@ -3,6 +3,7 @@ package com.ravingarinc.oose.assignment1.util.io;
 import com.ravingarinc.oose.assignment1.MazeApplication;
 import com.ravingarinc.oose.assignment1.util.IllegalMazeException;
 import com.ravingarinc.oose.assignment1.util.MazeErrorException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -18,10 +19,7 @@ public class MazeReader {
 
     //private Map<String, Class<? extends Icon>> types;
 
-    public MazeReader(String filename) throws MazeErrorException, IllegalMazeException {
-        if(filename == null || filename.isEmpty()) {
-            throw new IllegalMazeException("Filename cannot be null or empty!", MazeReader.class.getName(), 20);
-        }
+    public MazeReader(@NotNull String filename) throws MazeErrorException, IllegalMazeException {
         try {
             reader = new BufferedReader(new FileReader(filename));
         } catch (FileNotFoundException e) {
