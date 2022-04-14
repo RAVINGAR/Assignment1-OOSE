@@ -1,0 +1,38 @@
+Object Oriented Software Engineering
+Student ID | 20567307
+Name | Jordan King
+
+Assignment 1
+Assessment Criteria Response
+
+2) Appropriate use of containers
+
+Throughout the program I have used containers in a number of ways. The main uses of them are in the Player class, where it stores which key’s the player has obtained, which could range from literally 0 to 6. Since it requires checking said keys, the contains() method on the List interface made it very simple to check if a player had a key, rather than let’s say have a fixed size array which would have to iterate through etc. The other main use of containers is quite complex in that after the maze data is read from a file, it converts that into a Map with keys as a String, and the value as a LinkedList holding another string.
+The Map’s key pertains to the type of data loaded, for example the “S” for start, or “K” for key etc. This is initialised in a specific order as to ensure that the decorator pattern is used correctly in that keys and messages should only execute their methods if the doors or walls have allowed the player to move to that square. To maintain a specific order this is why I have used a LinkedHashMap as the type of Map.
+The value in the LinkedList now contains all other data points for that type, mainly the position of the data element and any other information it may need. I’m using a LinkedList instead of the generic List as when this data is being processed, I’ve used the ‘removeFirst’ function on the list instead of iterating due to the way I programmed the parseMazeData method in Maze.class
+
+Additionally I originally used containers to store the maze grid itself, however since it had a fixed size of rows and columns, there was no need.
+
+3) Clear and distinct class/interface/method responsibilities
+
+I would argue all of my classes and such have very clear responsibilities and serve a singular purpose. The only point of doubt would be when considering the MazeReader class. As it’s pretty much just a utility class that wraps a BufferedReader, originally I had it as a private inner class for the Maze. But since the Maze class was already quite large I moved it to it’s own class. Additionally I felt that the MazeReader shouldn’t modify the Maze, but rather pass information into it for the Maze to initialise itself with.
+
+Additionally all classes have a distinct purpose, with Element as such being the base building block of the maze, with then Key, Message etc extending from a different abstract class for reducing code complexity. This is further explained below in criteria 5)
+
+4) Appropriate error handling and logging
+How I’ve handled exceptions and logging is best explained from the two custom exceptions I have created.
+IllegalMazeException is responsible for any exception which I am throwing, not due to another exception but in case one argument is illegal or something goes wrong that isn’t supposed to.
+MazeErrorException however is used as a wrapper exception in that it is only thrown when otherwise fatal exception is thrown. It then provides a method to format the stack trace and print it as its message.
+These two errors are caught by a main catch block in MazeApplication and the errors are logged accordingly. If the program crashes due to some other error it means it’s NOT intentional as I have made sure to only catch methods which I expect.
+
+5) Strategy Pattern and Template Pattern
+
+I haven’t actually used the Strategy Pattern and/or Template Method Pattern very much throughout the code as I haven’t had a need to that much. The icon’s function almost entirely based on the Decorator pattern. However in a sense, the Strategy Pattern has been used in that the Icon is the generic class which is used for all method calls outside the Icon’s themselves. At no point in the Maze do I call for example Key.getSymbol or whatever else, as that would defeat the purpose. I do use the Strategy Pattern however through the classes in the decorations package. In that the Additive class is the superclass of all of those, which provides the base template methods for the decoration classes. This is because the decoration classes don’t all need to override the super’s methods. For example, the Key class does not need to override onMoveFrom(), or pretty much all the decorations don’t need to override the setNext or getPos method as those are the exact same for all. So by using the Strategy Pattern I’ve used the amount of repetitive code in the program.
+
+6) Decorator Pattern
+
+The decorator pattern is very much the core of the program. How it works is that when loading the maze each Icon will be created based on it’s type and ‘put’ into the grid. If there is an element already present on the grid, then the new Icon will have it’s next set to that current Icon and then the new Icon will be placed at that location. All of the decorations will call to their next.method() BEFORE they do anything with their own. Each decoration will consider the next result and then potentially modify their own to produce a final product which is then used by the maze.
+
+For example, the getSymbol method is used to give a 2D array representing the characters for a single cell. The initial cell (which is an Element.class) will create a blank array of the correct size. Any decorations added after that will first get the next.getSymbol() and then modify it. This means that any number of decorations can modify the symbol, and essentially the first decorations added are the last to have their say.
+
+Handling the movement of the player is also handled by the decorations, as every single decoration must have an input on if the player can move to or from it. It should be noted that the keys and messages MUST be the last icon’s to be added, so that the doors and or walls can deny or confirm if a player can move to said square.

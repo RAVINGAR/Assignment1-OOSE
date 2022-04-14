@@ -87,13 +87,22 @@ public class Maze {
                     if(player == null) {
                         throw new IllegalMazeException("Invalid maze file! No VALID start locations were specified!", Maze.class.getName(), 121);
                     }
+                    else if(!list.isEmpty()) {
+                        MazeApplication.logMessage(Level.WARNING, "More than one start location was specified! Using the first one..");
+                    }
                 }
                 case "E" -> list.forEach(element -> {
                     String[] split = element.split(" ", 3);
                     try {
                         int r = Integer.parseInt(split[0]);
                         int c = Integer.parseInt(split[1]);
-                        this.putIcon(r, c, new End(r, c));
+                        if(0 <= r && r < rows && 0 <= c && c < columns) {
+                            this.putIcon(r, c, new End(r, c));
+                        }
+                        else {
+                            MazeApplication.logMessage(Level.WARNING, "Specified END for maze was out of bounds! This maze may not be completable.");
+                        }
+
                     }
                     catch(NumberFormatException e) {
                         MazeApplication.logMessage(Level.WARNING, "Invalid location for element! Skipping..");
@@ -299,6 +308,9 @@ public class Maze {
             //There is no need to setNext of not-existing icon to 'new Element()' as this is done by default.
 
             grid[row][column] = icon;
+        }
+        else {
+            MazeApplication.logMessage(Level.WARNING, "Attempted to place icon at [" + row + "," + column + "] but that location is out of bounds! Ignoring icon now..");
         }
     }
 
