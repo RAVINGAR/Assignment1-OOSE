@@ -8,9 +8,7 @@ import com.ravingarinc.oose.assignment1.maze.Direction;
 import com.ravingarinc.oose.assignment1.maze.Maze;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.File;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -58,19 +56,15 @@ public class MazeApplication {
                     throw new NoSuchElementException("Filename was empty!");
                 }
 
-                FileReader file = new FileReader(filename); //This acts as a check to whether file exists.
-                file.close();
+                File file = new File(filename);
+                if(!file.isFile()) {
+                    System.out.println("File could not be found! Try again!");
+                    filename = null;
+                }
             }
             catch(NoSuchElementException e) {
                 System.out.println("Invalid input! Try again!");
                 scanner.next();
-            }
-            catch(FileNotFoundException e) {
-                System.out.println("File was not found! Please try again!");
-                filename = null;
-            }
-            catch (IOException e) {
-                throw new MazeErrorException("Could not close file!", e);
             }
         }
         return filename;
@@ -111,6 +105,7 @@ public class MazeApplication {
             }
         }
         viewer.display(maze);
+        System.out.println(Colour.YELLOW + "Congratulations you have beaten the Untitled Maze Game! Goodbye!");
     }
 
     public static void logMessage(Level level, String message) {

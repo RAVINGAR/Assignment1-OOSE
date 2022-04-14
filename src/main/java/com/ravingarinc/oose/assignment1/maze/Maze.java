@@ -216,7 +216,12 @@ public class Maze {
 
     @Nullable
     public Icon getIcon(int row, int column) {
-        return 0 <= row && row < rows && 0 <= column && column < columns ? this.grid[row][column] : null;
+        try {
+            return this.grid[row][column];
+        }
+        catch(IndexOutOfBoundsException ignored) { //Feel like this is quicker than comparing rows and columns manually.
+            return null;
+        }
     }
 
     public void handleInitialPlayerPosition() throws IllegalMazeException {

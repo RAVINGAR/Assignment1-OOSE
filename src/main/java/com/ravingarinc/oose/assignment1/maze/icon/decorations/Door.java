@@ -62,9 +62,8 @@ public class Door extends Additive {
         else {
             if(direction == blocking) {
                 if(player.hasKey(colour)) {
-                    player.removeKey(colour);
                     isOpen = true;
-                    player.sendMessage("You have unlocked the door!");
+                    player.sendMessage("You unlocked the magical " + colour.getReadableName() + " door!");
                     return true;
                 }
                 else {
